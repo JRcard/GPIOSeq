@@ -1,0 +1,106 @@
+
+
+1 - Énoncé:
+	Séquenceur pour GPIO
+
+2 - Analyse des besoins:
+	Communiquer des commandes aux GPIOs d’un micro-ordinateur (Raspberry Pi) sur le principe d’un DAW. Pouvoir édité des séquences jeux, les tester en temps réel. 
+	Créer le moyen que le Raspberry Pi devienne autonome à utiliser certaines séquences préétablies lors du démarrage de celui-ci.
+
+	Une gestion de l’audio: interface (entrée,sortie)
+
+	(Préférences: -Type de contrôleur; -Connections; -Préférence de communication.) **** éventuellement ****
+
+	Interface globale: 
+		Un menu: nouveau fichier, sauvegarde, ouvrir, etc;
+		Une barre d’outil: Mode de jeu (édition ou action); choix de scène, outils d’édition; une section de transport avec un play/stop/loop(on/off); 
+		
+	Interface spécifique:
+		Scènes: une ligne du temps en seconde; une barre de défilement; l’espace principale du séquenceur où il sera possible d’écrire des symboles semblables à des notes MIDI à la souris (peut-être avec un contrôleur avec un éventuel mode d’enregistrement) et d’y insérer des fichiers sons; un espace pour insérer des pistes. 
+		Pistes qui proposent les options présentés à l’utilisateur: nom de la piste, entrée ou sortie, si c’est une piste GPIO: numéro du GPIO, choix d’alternative du GPIO. Si c’est une piste audio: volume, pan
+
+
+
+3 - Acquisition de connaissances:
+	Voici un exemple logiciel semblable à ce que je veux me rapprocher (et de où j’ai eu mon idée): http://www.frightprops.com/director-software-preview-download.html
+	Rendre le fichier exécutable au démarrage du Raspberry Pi: http://www.instructables.com/id/Raspberry-Pi-Launch-Python-script-on-startup/?ALLSTEPS
+	Mode de fonctionnement des GPIO sur un Raspberry Pi: http://sourceforge.net/p/raspberry-gpio-python/wiki/Examples/, http://raspi.tv/2013/rpi-gpio-basics-7-rpi-gpio-cheat-sheet-and-pointers-to-rpi-gpio-advanced-tutorials, 
+	Outil graphique:  wxPython in Action par Noel Rappin and Robin Dunn, http://www.wxpython.org/onlinedocs.php, note de cours
+
+4 - Modèle:
+	-Le programme seul (à vide) sera là où les menus, la barre d’outil, la section de transport se regrouperont. Cela servira de fenêtre principale commune à toutes les scènes.
+
+	-Les scènes seront l’endroit où l’utilisateur pourra programmer et éditer les séquences jeux qui modifieront les comportements des GPIO, il pourra aussi y être inclus des fichiers sons. Les scènes devront pouvoir être indépendante les une des autres pour permettre l’utilisation de plusieurs signaux d’entrées qui déclenchent différent processus indépendant. Ou les scènes pourront être lié pour qu’un son et/ou des comportements des GPIO soient exécutés en boucle et qu’elle s’arrête par le déclenchement d’une autre scène à cause qu’elle aura reçu un signal d’entré. Chaque scène aura sa barre de défilement, sa ligne de temps et ses pistes propres. 
+
+	-La barre de défilement fera la lecture de la séquence en suivant la ligne du temps. Elle sera déclenché au moment où l’utilisateur appuiera sur « play » (Si il y a une piste qui est en attente d’un signal d’entrée c’est ce signal qui déclenchera la lecture de la séquence) et fera en sorte que les statuts des GPIO se modifient (ou que le son soit joué) lorsqu’elle rencontre les symboles prévus à cet effet.
+	
+	-À la création d’une nouvelle piste une fenêtre de paramètre sera présenté à l’utilisateur pour qu’il puisse entrée les paramètres qui indiqueront au programme quel genre d’événement il aura à gérer: le nom de la piste, le fichier son ou si c’est une piste GPIO, si c’est une entrée ou une sortie, numéro du GPIO, etc. Chaque piste réservera un endroit sur la scène pour y insérer les symboles. Il pourra avoir autant de piste GPIO que le nombre de GPIO disponible et autant de piste sonore que désirée. Il sera possible à l’aide d’un bouton sur la piste de changer les préférences de départ
+
+	-Les symboles: de forme rectangulaire ces symboles seront le support visuel du moment entre le temps que le GPIO s’ouvre et se ferme. Il pourra en avoir autant que l’utilisateur en aura de besoin par piste. La durée et l’endroit sur la ligne du temps pourront être modifiable après leurs créations. 
+	
+	- Lorsque l’utilisateur sera satisfait de son travail, il pourra exécuter son programme à même l’éditeur ou générer un fichier par une méthode d’exportation qui servira à un léger script pour qu’il soit charger au démarrage du Raspberry. (Cette dernière façon est encore en cogitation…)
+
+... Probablement la partie la plus importante puisque c'est la "qualité" de cette exportation de fichier python qui permet au projet de fonctionner sur le rPI.
+
+... Il y a énormément d'articles et de tutoriels sur le web en ce qui concerne la manipulation des chaînes de caractères. Un aspect important à travailler.
+ 
+
+5 - Méthode:
+	Une première class qui fera office de fenêtre principal (top window). Elle servira de canevas où tous les objets/outils seront encapsulé. Cette class contiendra:
+	- la section des menus: fichier: nouveau, ouvrir, sauvegarde, fermer l’application. Édition: nouvelle piste son, nouvelle piste GPIO, nouvelle scène, copier, coller, outils (crayon, efface)
+	- Une barre d’outils pour accès rapide: un menu déroulent pour le changement de scène, un autre pour le mode de jeu, des boutons de crayon, d’efface, « play », « stop », « loop ».
+
+	Ensuite vient la construction de l’interface de création (scène) il s’agit d’un canevas qui s’imbrique dans la fenêtre principale et qui contient les sections suivantes:
+	- Section pour les class de piste
+	- Section pour la programmation/édition de la séquence jeu qui consiste en un canevas vide que les class pistes viendront insérer un espace d’édition qui leur est propre.
+	Et contiendront les objets suivants:
+	- Une ligne du temps
+	- Une barre de défilement
+
+... Dans le contexte du cours (limité dans le temps), je démarrerais le projet avec en tête le concept de "scène", qui est très intéressant, mais je travaillerais sur une seule scène. Ça va éviter de passer trop de temps sur l'interface graphique (chargement, chevauchement des scènes sur l'interface) pour te laisser te concentrer sur la question de la génération du fichier python "exécutable". L'important est de penser "modulaire", c'est-à-dire de contruire les différents morceaux du projet de façon à pouvoir les ré-utiliser facilement. Le projet de base pourra assez facilement être étendu par la suite.  
+
+	Une class piste sera insérée dans la scène autant de fois voulu. A l’appel de la class une fenêtre de préférence apparaîtra pour placer les variables pour la suite de la création du type de la piste choisi:
+	Si c’est une piste GPIO:
+	- Nom de la piste
+	- Choix du type de numérotage (BCM ou BOARD)
+	- Numéro du GPIO
+	- une entrée ou une sortie
+	- *** éventuellement *** type de protocole (PWM, TXD, RXD, SDA, SCL)
+	- Une piste GPIO
+	Si c’est une piste de son:
+	- Nom de la piste
+	- Il sera demander d’inclure le fichier son
+	- Une piste avec un fader de volume et un potentiomètre de panoramisation sera créé.
+	Tous ces paramètres seront affiché sur la fenêtre « piste »
+	Une autre fonction de cette class sera de créer l’espace de dessin pour l’utilisateur. Elle ira se loger dans la section réservé à cette fin de la class scène.
+
+	Une class de symbole sera nécessaire pour créer les dessins pour la création de la séquence. Il servira de commutateur de valeur (0 ou 1) à envoyer au GPIO de la piste sur laquelle il se trouve. La rencontre entre la barre de défilement et du dessin coïncidera avec le moment où la valeur (0 ou 1) devra être redonné au GPIO concerné. 
+
+
+6 - Implémentation:
+
+7 - Test et maintenance:
+
+...
+Excellent!
+
+Pour faire des essais sur la génération de texte, tu peux créer manuellement une liste de dictionnaires contenant les différentes infos fournis par une séquence d'évènements GPIO. Ex:
+
+event = [
+        {"start": 0,
+         "end": 2.5,
+         "pin": 2,
+         "type": 0,
+         ...
+        },
+        {
+         ...
+        },
+        ...
+        ]
+
+Puis, à partir de cette liste, génère un fichier python prêt à être exécuté.
+
+20/20
+...
+
