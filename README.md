@@ -1,2 +1,2 @@
 # GPIOseq
-Séquenceur visuelle pour des GPIO de Raspberry Pi
+Visual sequencer for the GPIO of the Raspberry Pi
