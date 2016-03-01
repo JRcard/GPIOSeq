@@ -29,11 +29,11 @@ class Grid(wx.Panel):
 ######### MOUSE METHODS #####
     def onMouseLeftDown(self,e):
         self.CaptureMouse()
-        self.pos = self.clip(e.GetPositionTuple())        
-     
+        self.pos = self.clip(e.GetPositionTuple()) 
+        
         self.rectangle = Rectangle(self.pos[0],self.pos[1])     ### Creation du rectangle
-        RECTANGLES.append(self.rectangle)                       ## ajout a la liste des RECTANGLES
-
+        RECTANGLES.append(self.rectangle)                       ### ajout a la liste des RECTANGLES 
+        
 
     def onMotion(self,e):
         if self.HasCapture():
@@ -57,17 +57,17 @@ class Grid(wx.Panel):
 ### Cette section devrait etre dans export ou play..... 
 ### le dictionnaire devrait se remplir à la fin de la chaine. cela aidera à gerer les données des instances effacées.....
 
-                self.track_num = RECTANGLES[-1].getTrackNum()   ### valeur numerique représentant le numero de piste et la pin GPIO en même temps.
-                self.rect_start = RECTANGLES[-1].getStart()     ### coordonné du X apres le clip onMouseLeftUp
-                self.rect_stop = RECTANGLES[-1].getStop()       ### coordonné en X de la fin du rectangle (Valeur global dans la grid)
-                self.rect_width = RECTANGLES[-1].getWidth()     ### coordonné du X apres onMouseLeftUp (Longueur du rectangle)            
-                
+#                self.track_num = RECTANGLES[-1].getTrackNum()   ### valeur numerique représentant le numero de piste et la pin GPIO en même temps.
+#                self.rect_start = RECTANGLES[-1].getStart()     ### coordonné du X apres le clip onMouseLeftUp
+#                self.rect_stop = RECTANGLES[-1].getStop()       ### coordonné en X de la fin du rectangle (Valeur global dans la grid)
+#                self.rect_width = RECTANGLES[-1].getWidth()     ### coordonné du X apres onMouseLeftUp (Longueur du rectangle)            
+#                
 
-                setGPIO(self.track_num)
-                dictGPIO[self.track_num]["RECT_START"].append(self.rect_start)   ### création du dictionnaire pour les récupérations de données pour le script RASPI
-                dictGPIO[self.track_num]["RECT_WIDTH"].append(self.rect_width)
-                dictGPIO[self.track_num]["RECT_STOP"].append(self.rect_stop)
-                print "DICTIONNAIRE!!!!", dictGPIO
+#                setGPIO(self.track_num)
+#                dictGPIO[self.track_num]["RECT_START"].append(self.rect_start)   ### création du dictionnaire pour les récupérations de données pour le script RASPI
+#                dictGPIO[self.track_num]["RECT_WIDTH"].append(self.rect_width)
+#                dictGPIO[self.track_num]["RECT_STOP"].append(self.rect_stop)
+#                print "DICTIONNAIRE!!!!", dictGPIO
                 print "Append RECTANGLES:", RECTANGLES 
  
             else:     
@@ -95,7 +95,7 @@ class Grid(wx.Panel):
 
                 if rec.isInside(self.pos):     ### Volonté d'effacer l'instance et tous les données qui viennent avec........
                     #for rec in RECTANGLES:
-                    print "ERASE", self.rectangle
+                    print "ERASE", rec
                     RECTANGLES.remove(rec)
                        
                     self.Refresh()

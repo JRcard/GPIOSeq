@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 import wx
 from constants import *
 from variables import *
@@ -82,7 +84,7 @@ class Track(wx.Panel):
         
         self.parent = parent
         self.id = id
-        self.name = str(name)
+        self.name = name
         self.pos = pos
         self.size = size
         
@@ -97,7 +99,7 @@ class Track(wx.Panel):
         dlg = TrackNameDlg(self, -1, self.trackNum)
 
         if dlg.ShowModal() == wx.ID_OK:
-            self.name = str(dlg.getText())
+            self.name = dlg.getText()
             self.button.SetLabel(self.name)
 
         dlg.Destroy()

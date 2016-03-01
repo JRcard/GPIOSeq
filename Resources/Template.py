@@ -20,20 +20,14 @@ import os,time
 
 inputPin = []
 outputPin = dictGPIO.keys()      ## recupere la clef TrackNUm du dictionnaire
-for p in outputPin:
-    RECT_START = dictGPIO[p]["RECT_START"]     
-    RECT_WIDTH = dictGPIO[p]["RECT_WIDTH"] 
-
 
 #GPIO.setup(inputPin, GPIO.IN)
 #GPIO.setup(outputPin, GPIO.OUT)
-
 """
-
 SEQUENCE = """    
-
-
 def blink(pin):
+    RECT_START = dictGPIO[pin]["RECT_START"]     
+    RECT_WIDTH = dictGPIO[pin]["RECT_WIDTH"]
     for x in RECT_START:
         i = RECT_START.index(x) 
         ts = x * 0.01 
@@ -48,8 +42,8 @@ def blink(pin):
 
 
 
-for p in outputPin:
-    blink(p)
+for pin in outputPin:
+    blink(pin)
 
 #GPIO.cleanup()
 
