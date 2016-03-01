@@ -75,18 +75,17 @@ class SeqMenu(wx.MenuBar):
         self.dirname = ' '
         dlg = wx.FileDialog(self, "Export your file", self.dirname, "", "*.py", wx.SAVE | wx.OVERWRITE_PROMPT)
         if  dlg.ShowModal() == wx.ID_OK:
-            populateDictGPIO()                               ###########################
-            print "DICTIONNAIRE!!!!", dictGPIO
+            prepareGPIOList()                               ###########################
+
             # Generation du texte du Sequenceur
-            text = SETUP % (str(dictGPIO))  
+            text = SETUP % (str(RECTS))  
             text += SEQUENCE
             self.filename = dlg.GetFilename()
             self.dirname = dlg.GetDirectory()
             f = open(os.path.join(self.dirname, self.filename), "w")
             f.write(text)
-            f.close()
-            clearDictGPIO()                                       ############ dictionnaire ne rest pas! 
-            print "DICTIONNAIRE!!!!", dictGPIO 
+            f.close()   
+
         dlg.Destroy()
 
     

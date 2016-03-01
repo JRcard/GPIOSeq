@@ -13,7 +13,7 @@ class Rectangle(wx.Rect):
         self.width = width
         self.heigth = heigth
         
-        
+
     def draw(self,dc): 
         dc.SetPen(wx.Pen("#FFFFFF",1)) 
         dc.SetBrush(wx.Brush("#0000AA")) 
@@ -29,11 +29,14 @@ class Rectangle(wx.Rect):
         return self.startX + self.width
         
     def getTrackNum(self):
-        self.trackNum = self.trackY / GRID_STEP - 1 
+        self.trackNum = self.trackY / self.heigth - 1 
         return self.trackNum
         
     def getWidth(self):
         return self.width
+        
+    def getAll(self):
+        return (self.startX, self.trackY, self.width, self.heigth)
         
     def setStart(self,x):
         self.startX = x

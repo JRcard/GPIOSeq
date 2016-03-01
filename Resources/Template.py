@@ -7,7 +7,7 @@ import os
 
 SETUP = """
 
-dictGPIO = %s
+RECTS = %s
 
 import os,time
 #import RPi.GPIO as GPIO
@@ -19,32 +19,28 @@ import os,time
 ##### SET CHANNEL #####
 
 inputPin = []
-outputPin = dictGPIO.keys()      ## recupere la clef TrackNUm du dictionnaire
+outputPin = [rec[1] / rec[3] -1 for rec in RECTS]      ## recupere la clef TrackNUm du dictionnaire
+print outputPin
 
 #GPIO.setup(inputPin, GPIO.IN)
 #GPIO.setup(outputPin, GPIO.OUT)
 """
 SEQUENCE = """    
-def blink(pin):
-    RECT_START = dictGPIO[pin]["RECT_START"]     
-    RECT_WIDTH = dictGPIO[pin]["RECT_WIDTH"]
-    for x in RECT_START:
-        i = RECT_START.index(x) 
-        ts = x * 0.01 
-        tw = RECT_WIDTH[i] * 0.01
-        print ts                    # RECT_START
-        time.sleep(ts)              # start time
-        #GPIO.output(pin, 1)
-        print "on", tw
-        time.sleep(tw)              # width time
-        #GPIO.output(pin,0)
-        print "off"
+def blink(pin,i):
 
+    start = RECTS[i][0] * 0.01
+    width = RECTS[i][2] * 0.01
+    print start                    # RECT_START
+    time.sleep(start)              # start time
+    #GPIO.output(pin, 1)
+    print "on", width
+    time.sleep(width)              # width time
+    #GPIO.output(pin,0)
+    print "off"
 
-
-for pin in outputPin:
-    blink(pin)
+for i in range(len(outputPin)):
+    pin = outputPin[i]
+    blink(pin,i)
 
 #GPIO.cleanup()
-
 """
