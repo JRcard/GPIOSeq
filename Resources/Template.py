@@ -2,9 +2,6 @@
 
 import os
 
-#### Ici il me reste beaucoup à faire et à apprendre comment faire....
-#### Mais la récuperation par la methode Export fonctionne bien.
-
 SETUP = """
 
 dictGPIO = %s
@@ -65,9 +62,6 @@ print "Process liste", PROCESS
 for p in PROCESS:
     p.join()
     print "process.join()"
-    
-for n in outputPin:
-    GPIO.output(outputPin, 0)
     
 GPIO.cleanup()
 print "CLEANUP!!"

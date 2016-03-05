@@ -3,6 +3,7 @@
 
 import os
 import wx
+from Grid import *
 from Template import *
 from variables import *
 
@@ -14,22 +15,21 @@ class SeqMenu(wx.MenuBar):
         
         self.parent = parent
         # create each menu itself who will go on the menu bar
-        self.program = wx.Menu()
+
         self.file = wx.Menu()
         self.edit = wx.Menu()
         self.help = wx.Menu()
-               
-        # Put the "Program" menu on the menu bar and put action in this menu    
-        self.Append(self.program, "&Program")
-        self.menuExport = self.program.Append(100, "Export\tCtrl+E", "Export data")
-        self.menuExit = self.program.Append(wx.ID_EXIT, "E&xit", "Terminate the program")
 
         # Put the "File" menu on the menu bar and put action in this menu           
         self.Append(self.file, "&File")
         self.menuNew = self.file.Append(wx.ID_NEW, "&New", "New file")
         self.menuOpen = self.file.Append(wx.ID_OPEN, "&Open...", "Open a file")
-        self.menuSave = self.file.Append(wx.ID_SAVE, "&Save", "Save a File")
-        
+        self.menuSave = self.file.Append(wx.ID_SAVE, "&Save\tCtrl+S", "Save a File")
+        self.file.AppendSeparator()
+        self.menuExport = self.file.Append(100, "Export\tCtrl+E", "Export data")
+        self.file.AppendSeparator()
+        self.menuExit = self.file.Append(wx.ID_EXIT, "E&xit", "Terminate the program")
+                
         # Put the "Edit" menu on the menu bar and put action in this menu           
         self.Append(self.edit, "&Edit")
         self.menuCopy = self.edit.Append(wx.ID_COPY, "&Copy", "Copy the selection")
@@ -75,8 +75,9 @@ class SeqMenu(wx.MenuBar):
         self.dirname = ' '
         dlg = wx.FileDialog(self, "Export your file", self.dirname, "", "*.py", wx.SAVE | wx.OVERWRITE_PROMPT)
         if  dlg.ShowModal() == wx.ID_OK:
-            prepareDictGPIO()                               ###########################
+            prepareDictGPIO()
             print "DICTIONNARY!!!", dictGPIO
+            
             # Generation du texte du Sequenceur
             text = SETUP % (str(dictGPIO))  
             text += SEQUENCE
@@ -99,6 +100,8 @@ class SeqMenu(wx.MenuBar):
             self.filename = dlg.GetFilename()
             self.dirname = dlg.GetDirectory()
             f = open(os.path.join(self.dirname, self.filename), "r")
+            RECTANGLES = f.read()
+            print RECTANGLES
             f.close()  
         dlg.Destroy()
         
@@ -106,14 +109,14 @@ class SeqMenu(wx.MenuBar):
         self.dirname = ' '
         dlg = wx.FileDialog(self, "Save your file", self.dirname, "", "*.txt", wx.SAVE | wx.OVERWRITE_PROMPT)
         if dlg.ShowModal() == wx.ID_OK:
-            itcontains = "HORS FONCTION POUR L'INSTANT"
+            itcontains = str(RECTANGLES)
             
             self.filename = dlg.GetFilename()
             self.dirname = dlg.GetDirectory()
             filehandle = open(os.path.join(self.dirname, self.filename), "w")
             filehandle.write(itcontains)
             filehandle.close()
-            
+               
         dlg.Destroy()
         
     def onAbout(self,e):

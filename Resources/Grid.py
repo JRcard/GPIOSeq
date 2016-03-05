@@ -50,24 +50,7 @@ class Grid(wx.Panel):
             self.ReleaseMouse()
             self.pos = self.clip(e.GetPositionTuple())
     
-
             if self.pos[0] - RECTANGLES[-1].getStart() > 0:     ### si la souris bouge
-            
-### for rec in RECTANGLES: rec.getPatente..... puis ajout au dictionnaire.
-### Cette section devrait etre dans export ou play..... 
-### le dictionnaire devrait se remplir à la fin de la chaine. cela aidera à gerer les données des instances effacées.....
-
-#                self.track_num = RECTANGLES[-1].getTrackNum()   ### valeur numerique représentant le numero de piste et la pin GPIO en même temps.
-#                self.rect_start = RECTANGLES[-1].getStart()     ### coordonné du X apres le clip onMouseLeftUp
-#                self.rect_stop = RECTANGLES[-1].getStop()       ### coordonné en X de la fin du rectangle (Valeur global dans la grid)
-#                self.rect_width = RECTANGLES[-1].getWidth()     ### coordonné du X apres onMouseLeftUp (Longueur du rectangle)            
-#                
-
-#                setGPIO(self.track_num)
-#                dictGPIO[self.track_num]["RECT_START"].append(self.rect_start)   ### création du dictionnaire pour les récupérations de données pour le script RASPI
-#                dictGPIO[self.track_num]["RECT_WIDTH"].append(self.rect_width)
-#                dictGPIO[self.track_num]["RECT_STOP"].append(self.rect_stop)
-#                print "DICTIONNAIRE!!!!", dictGPIO
                 print "Append RECTANGLES:", RECTANGLES 
  
             else:     
@@ -83,26 +66,26 @@ class Grid(wx.Panel):
         
         for rec in RECTANGLES:
             if rec.isInside(self.pos):      ## determine si le curseur a cliqué dans un rectangle
-                                                     
                 print "ATTRAPPE"
-
+                break
+                
     def onMouseRightUp(self,e):
         if self.HasCapture():
             self.ReleaseMouse()
             self.pos = self.clip(e.GetPositionTuple())
             
             for rec in RECTANGLES:
-
-                if rec.isInside(self.pos):     ### Volonté d'effacer l'instance et tous les données qui viennent avec........
-                    #for rec in RECTANGLES:
+                if rec.isInside(self.pos):
                     print "ERASE", rec
                     RECTANGLES.remove(rec)
-                       
-                    self.Refresh()
+                    wx.CallAfter(self.Refresh)
+                    break
                     
-                else:
-                    print "RELACHE"
+#                else:
+#                    print "RELACHE"
 
+                    
+                    
 
 ######## PAINT METHOD #######
 
@@ -148,7 +131,8 @@ class Grid(wx.Panel):
         return tuple(pos)
             
 
-                                    ############   Fonction qui devrait devenir des class..... ##########
+############   Fonction qui devrait devenir des class..... ##########
+
     def backGround(self,dc):
         x, y = self.GetSize()        
         dc.SetBrush(wx.Brush("#000000"))

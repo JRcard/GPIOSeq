@@ -1,8 +1,6 @@
 # encoding: utf-8
 
-
 RECTANGLES = []  ## Instance des rectangles
-RECTS = []       ## Rectangle sans l'instance
 
 ##########  DICTIONMARE ########
 
@@ -19,22 +17,12 @@ def setGPIO(key):
 # Recupere une reference dans le dictionnaire.
 def getGPIO(key):
     return dictGPIO.get(key, None)
-    
-# place en ordre les valeurs des listes
-#def sort(lst):
-#    return sorted(lst)
-    
-# Enleve les redonances dans les listes
-#def order(lst):
-#    return list(sorted(set(lst)))
-    
 
+# Met les instances Rect en ordre chronologique. Ce cette liste en ordre, le dictionnaire se rempli.    
 def prepareDictGPIO():
     RECTANGLES.sort(key=lambda x: x[0])
     print RECTANGLES
-#    for rec in RECTANGLES:
-#        RECTS.append(rec.getAll())
-#    print "RECTS", RECTS        
+      
     for rec in RECTANGLES:
         track_num = rec.getTrackNum()   ### valeur numerique représentant le numero de piste et la pin GPIO en même temps.
         rect_start = rec.getStart()     ### coordonné du X apres le clip onMouseLeftUp
@@ -46,8 +34,8 @@ def prepareDictGPIO():
         dictGPIO[track_num]["RECT_WIDTH"].append(rect_width)
         dictGPIO[track_num]["RECT_STOP"].append(rect_stop)
 
-        
-def clearDictGPIO():                  #### dictionnaire ne reset pas!!!!!
+# Reset le dictionnaire         
+def clearDictGPIO():
     global dictGPIO
     if dictGPIO != None:
         dictGPIO.clear()  
