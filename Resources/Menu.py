@@ -109,7 +109,8 @@ class SeqMenu(wx.MenuBar):
         self.dirname = ' '
         dlg = wx.FileDialog(self, "Save your file", self.dirname, "", "*.txt", wx.SAVE | wx.OVERWRITE_PROMPT)
         if dlg.ShowModal() == wx.ID_OK:
-            itcontains = str(RECTANGLES)
+            prepareDictGPIO()
+            itcontains = str(RECTANGLES) + str(dictGPIO)
             
             self.filename = dlg.GetFilename()
             self.dirname = dlg.GetDirectory()

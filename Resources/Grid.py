@@ -6,11 +6,12 @@ from widgets import *
 
 
 class Grid(wx.Panel):
-    def __init__(self, parent, pos, size):
+    def __init__(self, parent, pos, size, zoom=1):
         wx.Panel.__init__(self, parent, pos=pos, size=size)#, style=wx.VSCROLL | wx.HSCROLL)
         self.SetBackgroundStyle(wx.BG_STYLE_PAINT)
         self.pos = None
-
+        self.zoom = zoom
+        
         self.Bind(wx.EVT_PAINT, self.onPaint)
         self.Bind(wx.EVT_LEFT_DOWN, self.onMouseLeftDown)
         self.Bind(wx.EVT_LEFT_UP, self.onMouseLeftUp)
@@ -19,12 +20,20 @@ class Grid(wx.Panel):
         self.Bind(wx.EVT_MOTION, self.onMotion)  
 
 
-######### EVENTUELLEMENT UNE CLASSE: TIMELINE
+
         for i in range(TIME_TOTAL):
             self.time = wx.StaticText(self, id=-1, 
-                                      label="%d:00" % (i+1),
-                                      pos=(TIMELINE_POS[0]+(i*TIMELINE_STEP),
+                                      label="%d:00" % (i),
+                                      pos=(TIMELINE_POS[0]+(i*TIMELINE_MINUTE),
                                       TIMELINE_POS[1]))
+                                      
+                                      
+        for i in range(TRACK_TOTAL):
+            self.track = Track(self,-1, 
+                               "GPIO%02d" % (i+1), 
+                               pos=(TRACKNAME_POS[0],TRACKNAME_POS[1]+(i*GRID_STEP)), 
+                               size=(59,19))
+
                                        
 ######### MOUSE METHODS #####
     def onMouseLeftDown(self,e):
@@ -39,7 +48,7 @@ class Grid(wx.Panel):
         if self.HasCapture():
             self.pos = self.clip(e.GetPositionTuple())
             
-            if self.pos[0] - RECTANGLES[-1].getStart() > 0:
+            if self.pos[0] - RECTANGLES[-1].getX() > 0:
                 RECTANGLES[-1].setWidth(self.pos[0])
             
                 self.Refresh()
@@ -50,7 +59,7 @@ class Grid(wx.Panel):
             self.ReleaseMouse()
             self.pos = self.clip(e.GetPositionTuple())
     
-            if self.pos[0] - RECTANGLES[-1].getStart() > 0:     ### si la souris bouge
+            if self.pos[0] - RECTANGLES[-1].getX() > 0:     ### si la souris bouge
                 print "Append RECTANGLES:", RECTANGLES 
  
             else:     
@@ -130,6 +139,8 @@ class Grid(wx.Panel):
             
         return tuple(pos)
             
+    def setZoom(self,x):
+        self.zoom = x
 
 ############   Fonction qui devrait devenir des class..... ##########
 
@@ -144,7 +155,13 @@ class Grid(wx.Panel):
         
     def squares(self,dc):
         x, y = self.GetSize()         
-        dc.SetPen(wx.Pen("#333333",1))
         for i in range(0,x,GRID_STEP):
-            a = dc.DrawLine(0,40+i, x,40+i)   ### HORIZONTAL LINES
-            b = dc.DrawLine(i,30, i,y)        ### VERTICAL LINES    
+            dc.SetPen(wx.Pen("#333333",1))
+            a = dc.DrawLine(0,TIMELINE_SIZE[1]+i, x,TIMELINE_SIZE[1]+i)   ### HORIZONTAL LINES
+            b = dc.DrawLine(TRACKNAME_SIZE[0]+i,30, TRACKNAME_SIZE[0]+i,y)        ### VERTICAL LINES
+            
+        for i in range(0,x,(TIMELINE_MINUTE*self.zoom)):                                       ### marqueur de minutes
+            dc.SetPen(wx.Pen("#333333",3))
+            b = dc.DrawLine(TRACKNAME_SIZE[0]+i,30, TRACKNAME_SIZE[0]+i,y)        ### VERTICAL LINES 
+        
+                

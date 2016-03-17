@@ -6,12 +6,15 @@ from variables import *
 
 class Rectangle(wx.Rect):
     
-    def __init__(self, startX=0, trackY=0, width=0, heigth=GRID_STEP):
-        wx.Rect.__init__(self, startX, trackY, width, heigth)
-        self.startX = startX
-        self.trackY = trackY
+    def __init__(self, X=0, Y=0, width=0, heigth=GRID_STEP):
+        wx.Rect.__init__(self, X, Y, width, heigth)
+        self.X = X
+        self.Y = Y
         self.width = width
         self.heigth = heigth
+        
+        self.start = self.x - TRACKNAME_SIZE[0]
+        self.stop = (self.x - TRACKNAME_SIZE[0]) + self.width
         
 
     def draw(self,dc): 
@@ -22,30 +25,33 @@ class Rectangle(wx.Rect):
     def isInside(self,x):
         return self.Contains(x)
         
+    def getX(self):
+        return self.X
+        
     def getStart(self):
-        return self.startX
+        return self.start
         
     def getStop(self):
-        return self.startX + self.width
+        return self.stop
         
     def getTrackNum(self):
-        self.trackNum = self.trackY / self.heigth - 1 
+        self.trackNum = self.Y / self.heigth - 1 
         return self.trackNum
         
     def getWidth(self):
         return self.width
         
     def getAll(self):
-        return (self.startX, self.trackY, self.width, self.heigth)
+        return (self.X, self.Y, self.width, self.heigth)
         
-    def setStart(self,x):
-        self.startX = x
+    def setX(self,x):
+        self.X = x
         
-    def setTrack(self,y):
-        self.trackY = y
+    def setY(self,y):
+        self.Y = y
         
     def setWidth(self,z):
-        self.width = z - self.startX
+        self.width = z - self.X
         
 
 class TrackNameDlg(wx.Dialog):
@@ -106,3 +112,13 @@ class Track(wx.Panel):
             self.button.SetLabel(self.name)
 
         dlg.Destroy()
+        
+
+class Zoom(wx.SpinCtrl):
+    def __init__(self, parent, id):
+        wx.SpinCtrl.__init__(self, parent=parent, id=id, size=(40,20), value="1", min=1, max=5, name="Zoom")
+        
+    
+    
+    
+    
