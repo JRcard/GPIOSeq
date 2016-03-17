@@ -3,7 +3,7 @@
 import wx
 from constants import *
 from Grid import *
-from widgets import Zoom
+from widgets import *
 
 class Scene(wx.Panel):
     def __init__(self, parent):
@@ -51,6 +51,7 @@ class Scene(wx.Panel):
         mainSize.Add(self.grid,0,wx.ALIGN_CENTER|wx.TOP, 60)
         
         self.SetSizer(mainSize)
+        
 ######## METHODES      
     def onStart(self,e):
         if self.playStop.GetLabel() == "Play":

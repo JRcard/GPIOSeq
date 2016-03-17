@@ -7,7 +7,8 @@ from widgets import *
 
 class Grid(wx.Panel):
     def __init__(self, parent, pos, size, zoom=1):
-        wx.Panel.__init__(self, parent, pos=pos, size=size)#, style=wx.VSCROLL | wx.HSCROLL)
+        wx.Panel.__init__(self, parent, pos=pos, size=size, style=wx.HSCROLL)
+
         self.SetBackgroundStyle(wx.BG_STYLE_PAINT)
         self.pos = None
         self.zoom = zoom
@@ -21,11 +22,11 @@ class Grid(wx.Panel):
 
 
 
-        for i in range(TIME_TOTAL):
-            self.time = wx.StaticText(self, id=-1, 
-                                      label="%d:00" % (i),
-                                      pos=(TIMELINE_POS[0]+(i*TIMELINE_MINUTE),
-                                      TIMELINE_POS[1]))
+#        for i in range(TIME_TOTAL):
+#            self.time = wx.StaticText(self, id=-1, 
+#                                      label="%d:00" % (i),
+#                                      pos=(TIMELINE_POS[0]+(i*TIMELINE_MINUTE),
+#                                      TIMELINE_POS[1]))
                                       
                                       
         for i in range(TRACK_TOTAL):
@@ -33,8 +34,8 @@ class Grid(wx.Panel):
                                "GPIO%02d" % (i+1), 
                                pos=(TRACKNAME_POS[0],TRACKNAME_POS[1]+(i*GRID_STEP)), 
                                size=(59,19))
-
-                                       
+                               
+                                     
 ######### MOUSE METHODS #####
     def onMouseLeftDown(self,e):
         self.CaptureMouse()
@@ -106,7 +107,7 @@ class Grid(wx.Panel):
         
         # TIMELINE #####        
         self.timeLine(dc)
-          
+        
         # GRID #######   
         self.squares(dc)      
 
@@ -152,16 +153,20 @@ class Grid(wx.Panel):
     def timeLine(self,dc):
         dc.SetBrush(wx.Brush("#CCCCCC"))
         dc.DrawRectangle(0,0, TIMELINE_SIZE[0],TIMELINE_SIZE[1])
-        
+
+        for i in range(TIME_TOTAL):
+            dc.DrawText("%d:00" % (i), TIMELINE_POS[0]+((i*TIMELINE_MINUTE)*self.zoom), TIMELINE_POS[1])
+
+            
     def squares(self,dc):
         x, y = self.GetSize()         
         for i in range(0,x,GRID_STEP):
             dc.SetPen(wx.Pen("#333333",1))
-            a = dc.DrawLine(0,TIMELINE_SIZE[1]+i, x,TIMELINE_SIZE[1]+i)   ### HORIZONTAL LINES
-            b = dc.DrawLine(TRACKNAME_SIZE[0]+i,30, TRACKNAME_SIZE[0]+i,y)        ### VERTICAL LINES
+            dc.DrawLine(0,TIMELINE_SIZE[1]+i, x,TIMELINE_SIZE[1]+i)      ### HORIZONTAL LINES
+            dc.DrawLine(TRACKNAME_SIZE[0]+i,30, TRACKNAME_SIZE[0]+i,y)   ### VERTICAL LINES
             
-        for i in range(0,x,(TIMELINE_MINUTE*self.zoom)):                                       ### marqueur de minutes
+        for i in range(0,x,(TIMELINE_MINUTE*self.zoom)):                 ### marqueur de minutes
             dc.SetPen(wx.Pen("#333333",3))
-            b = dc.DrawLine(TRACKNAME_SIZE[0]+i,30, TRACKNAME_SIZE[0]+i,y)        ### VERTICAL LINES 
+            dc.DrawLine(TRACKNAME_SIZE[0]+i,30, TRACKNAME_SIZE[0]+i,y)   ### VERTICAL LINES 
         
                 

@@ -6,15 +6,12 @@ from variables import *
 
 class Rectangle(wx.Rect):
     
-    def __init__(self, X=0, Y=0, width=0, heigth=GRID_STEP):
+    def __init__(self, X=0, Y=0, width=0, heigth=GRID_STEP):   ### ajouter time start puis width abs....
         wx.Rect.__init__(self, X, Y, width, heigth)
         self.X = X
         self.Y = Y
         self.width = width
         self.heigth = heigth
-        
-        self.start = self.x - TRACKNAME_SIZE[0]
-        self.stop = (self.x - TRACKNAME_SIZE[0]) + self.width
         
 
     def draw(self,dc): 
@@ -29,10 +26,10 @@ class Rectangle(wx.Rect):
         return self.X
         
     def getStart(self):
-        return self.start
+        return self.x - TRACKNAME_SIZE[0]
         
     def getStop(self):
-        return self.stop
+        return (self.x - TRACKNAME_SIZE[0]) + self.width
         
     def getTrackNum(self):
         self.trackNum = self.Y / self.heigth - 1 
