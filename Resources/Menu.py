@@ -113,8 +113,10 @@ class SeqMenu(wx.MenuBar):
             itcontains = str(RECTANGLES) + str(dictGPIO)
             
             self.filename = dlg.GetFilename()
+            print self.filename
             self.dirname = dlg.GetDirectory()
             filehandle = open(os.path.join(self.dirname, self.filename), "w")
+            print filehandle
             filehandle.write(itcontains)
             filehandle.close()
                

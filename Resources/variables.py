@@ -25,9 +25,9 @@ def prepareDictGPIO():
       
     for rec in RECTANGLES:
         track_num = rec.getTrackNum()   ### valeur numerique représentant le numero de piste et la pin GPIO en même temps.
-        rect_start = rec.getStart()     ### coordonné du X apres le clip onMouseLeftUp
-        rect_stop = rec.getStop()       ### coordonné en X de la fin du rectangle (Valeur global dans la grid)
-        rect_width = rec.getWidth()     ### coordonné du X apres onMouseLeftUp (Longueur du rectangle)            
+        rect_start = rec.getAbsStart()     ### coordonné du X apres le clip onMouseLeftUp
+        rect_stop = rec.getAbsStop()       ### coordonné en X de la fin du rectangle (Valeur global dans la grid)
+        rect_width = rec.getAbsWidth()     ### coordonné du X apres onMouseLeftUp (Longueur du rectangle)            
     
         setGPIO(track_num)
         dictGPIO[track_num]["RECT_START"].append(rect_start)   ### création du dictionnaire pour les récupérations de données pour le script RASPI

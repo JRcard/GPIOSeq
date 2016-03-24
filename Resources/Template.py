@@ -27,8 +27,8 @@ SEQUENCE = """
 def blink(pin):
     for i in range(len(dictGPIO[pin]["RECT_START"])):
         if i == 0:
-            start = dictGPIO[pin]["RECT_START"][i] * 0.1
-            width = dictGPIO[pin]["RECT_WIDTH"][i] * 0.1
+            start = dictGPIO[pin]["RECT_START"][i]
+            width = dictGPIO[pin]["RECT_WIDTH"][i]
             print "pin %d StandBy" % pin, start, time.time()
             time.sleep(start)              # start time
             GPIO.output(pin, 1)
@@ -37,8 +37,8 @@ def blink(pin):
             GPIO.output(pin, 0)
             print "pin %d off" % pin, time.time()
         else:
-            start = (dictGPIO[pin]["RECT_START"][i] - dictGPIO[pin]["RECT_STOP"][i-1]) * 0.1
-            width = dictGPIO[pin]["RECT_WIDTH"][i] * 0.1
+            start = (dictGPIO[pin]["RECT_START"][i] - dictGPIO[pin]["RECT_STOP"][i-1])
+            width = dictGPIO[pin]["RECT_WIDTH"][i]
             print "pin %d StandBy" % pin, start, time.time()
             time.sleep(start)              # start time
             GPIO.output(pin, 1)

@@ -4,14 +4,22 @@ import wx
 from constants import *
 from variables import *
 
+## Je sais que ça fait plus d'une fois qu'on en jase.... mais je ne saisi pas encore la logique....
+## Présentement mon rectangle ne donne plus du tout les bonnes valeurs de absStart stop et AbsWidth... voir les méthodes:getAbsStart,getAbsStop,getAbsWidth
+## j'avais réussit à changer les rectangles de place grace au zoom. mais il ne revenais plus à leur place quand je "dézoomais"
+## et la marge que je laisse pour les TRACKNAME me cause de beaux maux de tête. Je me demande si les NAMETRACK n'étaient pas mieux à l"extérieur de ma grid
+
 class Rectangle(wx.Rect):
     
-    def __init__(self, X=0, Y=0, width=0, heigth=GRID_STEP):   ### ajouter time start puis width abs....
+    def __init__(self, X=0, Y=0, width=0, heigth=GRID_STEP, absStart=0, absWidth=0):
         wx.Rect.__init__(self, X, Y, width, heigth)
         self.X = X
         self.Y = Y
         self.width = width
         self.heigth = heigth
+        
+        self.absStart = absStart
+        self.absWidth = absWidth
         
 
     def draw(self,dc): 
@@ -25,22 +33,28 @@ class Rectangle(wx.Rect):
     def getX(self):
         return self.X
         
-    def getStart(self):
-        return self.x - TRACKNAME_SIZE[0]
-        
-    def getStop(self):
-        return (self.x - TRACKNAME_SIZE[0]) + self.width
-        
     def getTrackNum(self):
         self.trackNum = self.Y / self.heigth - 1 
         return self.trackNum
+                
+    def getAbsStart(self):
+        return (self.absStart - TRACKNAME_SIZE[0]) * TIMELINE_UNIT
         
-    def getWidth(self):
-        return self.width
+    def getAbsStop(self):
+        return ((self.absStart - TRACKNAME_SIZE[0]) + self.absWidth) * TIMELINE_UNIT
+        
+    def getAbsWidth(self):
+        return self.absWidth * TIMELINE_UNIT
         
     def getAll(self):
-        return (self.X, self.Y, self.width, self.heigth)
+        return (self.X, self.Y, self.width,
+                self.heigth, self.absStart,
+                self.absWidth)
         
+    def setZoom(self,zoom):
+        self.X = (self.X * zoom)
+        self.width = (self.width * zoom)
+                
     def setX(self,x):
         self.X = x
         
