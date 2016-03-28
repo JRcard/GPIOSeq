@@ -1,10 +1,11 @@
-
+# encoding: utf-8
 
 import wx, os
 from constants import *
 from variables import *
 from Template import *
-from Grid import *
+#from Grid import *
+from NewGridRectTEst import *
 from widgets import *
 
 class Scene(wx.Panel):

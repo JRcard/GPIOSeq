@@ -11,20 +11,19 @@ from variables import *
 
 class Rectangle(wx.Rect):
     
-    def __init__(self, X=0, Y=0, width=0, heigth=GRID_STEP, absStart=0, absWidth=0):
+    def __init__(self, X=0, Y=0, width=0, heigth=GRID_STEP):
         wx.Rect.__init__(self, X, Y, width, heigth)
         self.X = X
         self.Y = Y
         self.width = width
         self.heigth = heigth
         
-        self.absStart = absStart
-        self.absWidth = absWidth
-        
+        #self.rect = wx.Rect(self.X, self.Y, self.width, self.heigth)
 
-    def draw(self,dc): 
+    def draw(self,dc,zoom): 
         dc.SetPen(wx.Pen("#FFFFFF",1)) 
         dc.SetBrush(wx.Brush("#0000AA")) 
+        self.setZoom(zoom)
         dc.DrawRectangleRect(self)
        
     def isInside(self,x):
@@ -47,22 +46,23 @@ class Rectangle(wx.Rect):
         return self.absWidth * TIMELINE_UNIT
         
     def getAll(self):
-        return (self.X, self.Y, self.width,
-                self.heigth, self.absStart,
-                self.absWidth)
+        return (self.X, self.Y, self.width, self.heigth, self.absStart, self.absWidth)
         
     def setZoom(self,zoom):
-        self.X = (self.X * zoom)
-        self.width = (self.width * zoom)
+        self.X = self.X * zoom
+        self.width = self.width*zoom
                 
     def setX(self,x):
         self.X = x
+
         
     def setY(self,y):
         self.Y = y
+
         
     def setWidth(self,z):
         self.width = z - self.X
+
         
 
 class TrackNameDlg(wx.Dialog):

@@ -11,13 +11,13 @@ class Grid(wx.Panel):
         self.SetBackgroundStyle(wx.BG_STYLE_PAINT)
         
         ### la scrollbar apparait mais ne fonctionne pas....
-        self.scroll = wx.ScrollBar(self, -1, pos=(TRACKNAME_POS[0],TRACKNAME_POS[1]+(27*GRID_STEP)),
-                                   size=(GRID_SIZE[0],15), style=wx.SB_HORIZONTAL)
+#        self.scroll = wx.ScrollBar(self, -1, pos=(TRACKNAME_POS[0],TRACKNAME_POS[1]+(TRACK_TOTAL*GRID_STEP)),
+#                                   size=(GRID_SIZE[0],15), style=wx.SB_HORIZONTAL)
         
         self.pos = None
         self.zoom = zoom
-        
-        self.Bind(wx.EVT_SCROLL, self.onScroll)
+
+#        self.Bind(wx.EVT_SCROLL, self.onScroll)
         self.Bind(wx.EVT_PAINT, self.onPaint)
         self.Bind(wx.EVT_LEFT_DOWN, self.onMouseLeftDown)
         self.Bind(wx.EVT_LEFT_UP, self.onMouseLeftUp)
@@ -35,7 +35,7 @@ class Grid(wx.Panel):
 ######### MOUSE METHODS #####
     def onMouseLeftDown(self,e):
         self.CaptureMouse()
-        self.pos = self.clip(e.GetPositionTuple()) 
+        self.pos = self.clip(e.GetPositionTuple())
         
         self.rectangle = Rectangle(self.pos[0], self.pos[1])     ### Creation du rectangle
         RECTANGLES.append(self.rectangle)                       ### ajout a la liste des RECTANGLES 
@@ -110,11 +110,11 @@ class Grid(wx.Panel):
         # RECTANGLE #######  
         if RECTANGLES is not []:          
             for rec in RECTANGLES:
-                rec.draw(dc)
+                rec.draw(dc,self.zoom)
                
-    def onScroll(self,e):
-        thumbPos = self.scroll.GetThumbPosition()
-        self.scroll.SetScrollbar(thumbPos,GRID_SIZE[0]/self.zoom,GRID_SIZE[0]*self.zoom,GRID_SIZE[0]/self.zoom)
+#    def onScroll(self,e):
+#        thumbPos = self.scroll.GetThumbPosition()
+#        self.scroll.SetScrollbar(thumbPos,GRID_SIZE[0]/self.zoom,GRID_SIZE[0]*self.zoom,GRID_SIZE[0]/self.zoom)
             
             
             
