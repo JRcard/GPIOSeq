@@ -4,8 +4,8 @@ import wx, os
 from constants import *
 from variables import *
 from Template import *
-#from Grid import *
-from NewGridRectTEst import *
+from Grid import *
+#from NewGridRectTEst import *
 from widgets import *
 
 class Scene(wx.Panel):
@@ -48,14 +48,29 @@ class Scene(wx.Panel):
 
 
 ######## TRACKNAME @@@@@@
-
-
+        trackSize = wx.BoxSizer(wx.VERTICAL)
+        TRACKS = []
+        for i in range(TRACK_TOTAL):
+            self.track = Track(self,-1, 
+                               "GPIO%02d" % (i+1), 
+                               pos=(TRACKNAME_POS[0],TRACKNAME_POS[1]+(i*GRID_STEP)), 
+                               size=(59,GRID_STEP))
+                               
+            TRACKS.append(self.track)
+            trackSize.Add(TRACKS[i])
+            
+        
+        
 ######## GRID ##########
-        gridSize = wx.BoxSizer(wx.VERTICAL) 
+        gridSize = wx.BoxSizer(wx.HORIZONTAL) 
         
         self.grid = Grid(self, pos=GRID_POS, size=GRID_SIZE)
         
-        mainSize.Add(self.grid,0,wx.ALIGN_CENTER|wx.TOP, 60)
+        gridSize.Add(trackSize,0,wx.TOP, 40)
+        gridSize.Add(self.grid)
+        
+        
+        mainSize.Add(gridSize,0,wx.ALIGN_CENTER|wx.TOP,60)
         
         self.SetSizer(mainSize)
         

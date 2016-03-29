@@ -20,11 +20,12 @@ class Rectangle(wx.Rect):
         
         #self.rect = wx.Rect(self.X, self.Y, self.width, self.heigth)
 
-    def draw(self,dc,zoom): 
-        dc.SetPen(wx.Pen("#FFFFFF",1)) 
-        dc.SetBrush(wx.Brush("#0000AA")) 
-        self.setZoom(zoom)
-        dc.DrawRectangleRect(self)
+    def draw(self,dc,zoom,pen,brush): 
+        dc.SetPen(wx.Pen(pen,1)) 
+        dc.SetBrush(wx.Brush(brush)) 
+        dc.DrawRectangle(self.X*zoom,self.Y,self.width*zoom,self.heigth)
+#        dc.DrawRectangle(self)
+
        
     def isInside(self,x):
         return self.Contains(x)
@@ -37,10 +38,10 @@ class Rectangle(wx.Rect):
         return self.trackNum
                 
     def getAbsStart(self):
-        return (self.absStart - TRACKNAME_SIZE[0]) * TIMELINE_UNIT
+        return self.absStart * TIMELINE_UNIT
         
     def getAbsStop(self):
-        return ((self.absStart - TRACKNAME_SIZE[0]) + self.absWidth) * TIMELINE_UNIT
+        return (self.absStart + self.absWidth) * TIMELINE_UNIT
         
     def getAbsWidth(self):
         return self.absWidth * TIMELINE_UNIT
@@ -55,11 +56,9 @@ class Rectangle(wx.Rect):
     def setX(self,x):
         self.X = x
 
-        
     def setY(self,y):
         self.Y = y
 
-        
     def setWidth(self,z):
         self.width = z - self.X
 

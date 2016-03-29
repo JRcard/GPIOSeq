@@ -8,7 +8,7 @@ from widgets import *
 
 class Grid(wx.Panel):
     def __init__(self, parent, pos, size, zoom=1):
-        wx.Panel.__init__(self, parent, pos=pos, size=size)
+        wx.Panel.__init__(self, parent, pos=pos, size=(size[0]*zoom,size[1]))  ### !!! watch size avec scrollBar!!! ###
         self.SetBackgroundStyle(wx.BG_STYLE_PAINT)
         
         ### la scrollbar apparait mais ne fonctionne pas....
@@ -36,21 +36,22 @@ class Grid(wx.Panel):
     def onMouseLeftDown(self,e):
         self.CaptureMouse()
         self.pos = self.clip(e.GetPositionTuple())
-        rectID = self.getRectAtPoint(self.pos[0],self.pos[1])
+        #rectID = self.getRectID(self.pos)
         mx = self.pos[0]/self.zoom
         my = self.pos[1]
-        if rectID > -1:
-            self.dragID = rectID
-            self.isDrag = True
-            self.dragX = mx - self.rectangles[rectID].X
-            self.dragY = my - self.rectangles[rectID].Y
-            
-            self.rectangles.remove(self.rectangles[rectID])
-            
-        else:
-            self.previewRect = Rectangle(mx,my,0,GRID_STEP)
-            self.isPreview = True
-            self.Refresh()
+        for rec in self.rectangles:
+            if rec.Contains(self.pos):
+                self.dragID = self.rectangles.index(rec)
+                self.isDrag = True
+                self.dragX = mx - self.rectangles[rec].X
+                self.dragY = my - self.rectangles[rec].Y
+
+                
+            elif not rec.Contains(self.pos):
+                self.previewRect = Rectangle(mx,my,0,GRID_STEP)
+                self.isPreview = True
+                self.rectangles.append(self.previewRect)
+
             
 
             
@@ -61,8 +62,8 @@ class Grid(wx.Panel):
             my = self.pos[1]
             if self.isPreview:
                 self.previewRect.width = max(0,mx-self.previewRect.X)
-                self.rectangles.append(self.previewRect)
                 self.Refresh()
+                
             elif self.isDrag:
                 self.rectangles[self.dragID].X = mx - self.dragX
                 self.rectangles[self.dragID].Y = my - self.dragY
@@ -75,15 +76,20 @@ class Grid(wx.Panel):
             self.pos = self.clip(e.GetPositionTuple())
             if self.isPreview:
                 self.isPreview = False
+                self.Refresh()
                 if self.previewRect.width <= 0:
-                    self.rectangles.pop(self.previewRect)
+                    print "rectangles remove from list: ", self.rectangles[-1]
+                    self.rectangles.pop()
+                    
+                else:
                     print self.rectangles
-                    self.Refresh()
+
             elif self.isDrag:
                 self.isdrag = False
+                print "release: ", self.rectangles[self.dragID]
                 
             else:
-                print "ERROR: mouse outside the grid"
+                print "ERROR: go back to work!!"
                 
                 
     def onPaint(self,e):
@@ -99,13 +105,13 @@ class Grid(wx.Panel):
         self.squares(dc) 
         
         for rec in self.rectangles:
-            rec.draw(dc,self.zoom,"#0000aa", "#0000ff")
+            rec.draw(dc,self.zoom,"#000099", "#0000ff")
             
             if self.isPreview:
-                self.preview = rec.draw(dc,self.zoom,"#aa0000", "#000000")
+                self.preview = self.rectangles[-1].draw(dc,self.zoom,"#0000ff", "#000000")
+                
 
-
-######## focntion general  #########
+######## fonctions generales  #########
 
     def backGround(self,dc):
         x, y = self.GetSize()        
@@ -127,11 +133,11 @@ class Grid(wx.Panel):
         for i in range(0,x*self.zoom,GRID_STEP):
             dc.SetPen(wx.Pen("#333333",1))
             dc.DrawLine(0,TIMELINE_SIZE[1]+i, x,TIMELINE_SIZE[1]+i)      ### HORIZONTAL LINES
-            dc.DrawLine(TRACKNAME_SIZE[0]+i,30, TRACKNAME_SIZE[0]+i,y)   ### VERTICAL LINES
+            dc.DrawLine(+i*self.zoom,30, +i*self.zoom,y)   ### VERTICAL LINES
             
-        for i in range(0,x,(TIMELINE_MINUTE*self.zoom)):                 ### marqueur de minutes
+        for i in range(0,x*self.zoom,TIMELINE_MINUTE):                 ### marqueur de minutes
             dc.SetPen(wx.Pen("#333333",3))
-            dc.DrawLine(TRACKNAME_SIZE[0]+i,30, TRACKNAME_SIZE[0]+i,y)   ### VERTICAL LINES 
+            dc.DrawLine(i*self.zoom,30, i*self.zoom,y)   ### VERTICAL LINES 
         
 
     def clip(self,pos):
@@ -161,11 +167,13 @@ class Grid(wx.Panel):
         self.zoom = x
         
 
-    def getRectAtPoint(self,x,y):
-        for i in range(len(self.rectangles)-1):
-            rec = self.rectangles[i]
-            if x>=rec.X and x<rec.x+rec.width and y>=rec.y and y<rec.y+GRID_STEP:
-                return i
+    def getRectID(self,pos):
+        for rec in self.rectangles:
+            x = pos[0]
+            y = pos[1]
+            if rec.ContainsXY(x*self.zoom,y):      ## determine si le curseur a cliqué dans un rectangle
+                print "ATTRAPPE: ", rec
+                return self.rectangles.index(rec)
             else:
                 return -1
 
@@ -177,9 +185,12 @@ class Rectangle(wx.Rect):
         self.width = width
         self.heigth = GRID_STEP
         
+        
     def draw(self,dc,zoom,pen,brush):
         dc.SetPen(wx.Pen(pen,1)) 
         dc.SetBrush(wx.Brush(brush)) 
         dc.DrawRectangle(self.X*zoom,self.Y,self.width*zoom,self.heigth)
         
-        
+    def getTrackNum(self):
+        self.trackNum = self.Y / self.heigth - 1 
+        return self.trackNum    
