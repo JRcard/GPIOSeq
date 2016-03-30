@@ -40,13 +40,6 @@ class Rectangle(wx.Rect):
         
     def getAbsWidth(self):
         return self.width * TIMELINE_UNIT
-        
-    def getAll(self):
-        return (self.X, self.Y, self.width, self.heigth)
-        
-    def setZoom(self,zoom):
-        self.X = self.X * zoom
-        self.width = self.width * zoom
 
         
 

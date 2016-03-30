@@ -51,7 +51,7 @@ class SeqMenu(wx.MenuBar):
         self.Bind(wx.EVT_MENU, self.onOpen, self.menuOpen)
         self.Bind(wx.EVT_MENU, self.onSave, self.menuSave)
         
-        # EDIT 
+        # EDIT  ### TO DO: Undo, Redo
         #self.Bind(wx.EVT_MENU, self.onCopy, self.menuCopy)
         #self.Bind(wx.EVT_MENU, self.onPaste, self.menuPaste)
         

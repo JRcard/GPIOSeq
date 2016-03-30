@@ -13,11 +13,17 @@ class Grid(wx.ScrolledWindow):
         self.zoom = zoom
         self.pos = None
         self.create = False
-        self.catch = False
+        self.leftCatch = False
+        self.rightCatch = False
         self.recSize = False
+        self.newRec = None
         self.rec = None
         self.dragX = 0
         self.dragY = 0
+        self.regCursor = wx.StockCursor(wx.CURSOR_ARROW)
+        self.sizeCursor = wx.StockCursor(wx.CURSOR_SIZEWE)
+        self.moveCursor = wx.StockCursor(wx.CURSOR_SIZING)
+        
         
 #        self.Bind(wx.EVT_SCROLL, self.onScroll)
         self.Bind(wx.EVT_PAINT, self.onPaint)
@@ -32,47 +38,55 @@ class Grid(wx.ScrolledWindow):
     def onMouseLeftDown(self,e):
         self.CaptureMouse()
         self.pos = self.clip(e.GetPositionTuple())
-        posX = self.pos[0]/self.zoom
+        posX = self.pos[0] / self.zoom
         posY = self.pos[1]
                 
         for rec in RECTANGLES:
-            if rec.isInside((posX,posY)):
+            if rec.isInside((posX, posY)):
                 self.rec = rec
-                self.create = False
-                self.catch = True
-                self.dragX = posX - self.rec.X
-                self.dragY = posY - self.rec.Y
-                print "catch to move!"
                 break
                 
-        if self.catch:
-            if self.pos[0] >= self.rec.width - 4:
-                self.catch = False
-                self.recSize = True   ##### concept a revoir!!!!!!!!
-     
-        if not self.catch and not self.recSize:
+        if self.rec == None:
             self.rectangle = Rectangle(posX, posY)
             RECTANGLES.append(self.rectangle) 
+            self.newRec = self.rectangle
             self.create = True
+                
+        elif self.rec is not None and posX >= self.rec.X + (self.rec.width - 4) and posX <= self.rec.X + self.rec.width:
+            self.recSize = True
+            self.SetCursor(self.sizeCursor)
+            self.dragX = posX - self.rec.width
+            print "catch to resize!", self.rec
             
-        
+        elif self.rec is not None:
+            self.leftCatch = True
+            self.SetCursor(self.moveCursor)
+            self.dragX = posX - self.rec.X
+            self.dragY = posY - self.rec.Y
+            print "catch to move!", self.rec
+
+
     def onMotion(self,e):
         if self.HasCapture():
             self.pos = self.clip(e.GetPositionTuple())
-            posX = self.pos[0]/self.zoom
+            posX = self.pos[0] / self.zoom
             posY = self.pos[1]
             
-            if self.recSize:
-                self.rec.width = posX - self.dragX
-                self.recSize = False
-            
-            if self.catch:
-                self.rec.X = max(0,posX - self.dragX)
-                self.rec.Y = min(posY - self.dragY, GRID_SIZE[1] - SCROLLBAR) 
+            if self.rightCatch and self.rec.isInside((posX,posY)):
+                    pass
+            else:
+                self.rightCatch = False
                 
             if self.create: 
-                if self.pos[0] - RECTANGLES[-1].X > 0:
-                    RECTANGLES[-1].width = max(0,posX-RECTANGLES[-1].X)
+                if self.pos[0] - self.newRec.X > 0:
+                    self.newRec.width = max(0, posX - self.newRec.X)
+            
+            elif self.recSize:
+                self.rec.width = max(1, posX - self.dragX)
+            
+            elif self.leftCatch:
+                self.rec.X = max(0, posX - self.dragX)
+                self.rec.Y = min(posY - self.dragY, GRID_SIZE[1] - SCROLLBAR) 
                     
             self.Refresh()
 
@@ -83,19 +97,35 @@ class Grid(wx.ScrolledWindow):
             self.pos = self.clip(e.GetPositionTuple())
             if self.create:
                 self.create = False
-                if self.pos[0] - RECTANGLES[-1].X > 0:
+                if self.pos[0]/self.zoom - self.newRec.X > 0:
                     print "Append RECTANGLES:", RECTANGLES 
+                    print
      
                 else:     
-                    RECTANGLES.pop()
+                    RECTANGLES.remove(self.newRec)
                     print 
                     print "Remove RECTANGLES:", RECTANGLES 
                     print
-                
-            if self.catch:
-                self.catch = False
+                    
+            elif self.recSize:
+                self.recSize = False
+                self.SetCursor(self.regCursor)
                 if self.rec.width <= 0:
-                    RECTANGLES.remove(rec)
+                    RECTANGLES.remove(self.rec)
+                    self.rec = None
+                else: 
+                    self.rec = None
+                                        
+            elif self.leftCatch:
+                self.leftcatch = False
+                self.SetCursor(self.regCursor)
+                if self.rec.width <= 0:
+                    RECTANGLES.remove(self.rec)
+                    self.rec = None
+                    
+                else:
+                    self.rec = None
+
                     
 
     def onMouseRightDown(self,e):
@@ -106,8 +136,12 @@ class Grid(wx.ScrolledWindow):
         
         for rec in RECTANGLES:
             if rec.isInside((posX,posY)):
+                self.rec = rec
                 print "ATTRAPPE"
                 break
+                
+        if self.rec is not None:
+            self.rightCatch = True
                 
     def onMouseRightUp(self,e):
         if self.HasCapture():
@@ -116,12 +150,16 @@ class Grid(wx.ScrolledWindow):
             posX = self.pos[0]/self.zoom
             posY = self.pos[1]  
                       
-            for rec in RECTANGLES:
-                if rec.isInside((posX,posY)):
-                    print "ERASE", rec
-                    RECTANGLES.remove(rec)
-                    wx.CallAfter(self.Refresh)
-                    break
+
+            if self.rightCatch and self.rec.isInside((posX,posY)):
+                self.rightCatch = False
+                print "ERASE", self.rec
+                RECTANGLES.remove(self.rec)
+                self.rec = None
+                wx.CallAfter(self.Refresh)
+                
+            else:
+                self.rightCatch = False
 
 
 ######## PAINT METHOD #######
@@ -170,7 +208,6 @@ class Grid(wx.ScrolledWindow):
             
     def setZoom(self,x):
         self.zoom = x
-        
 
 
 ### comment je fais pour savoir que ma grille s'élargit vraiment 
