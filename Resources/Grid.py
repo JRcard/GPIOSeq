@@ -5,22 +5,20 @@ from variables import *
 from widgets import *
 
 
-class Grid(wx.Panel):
+class Grid(wx.ScrolledWindow):
     def __init__(self, parent, pos, size, zoom=1):
-        wx.Panel.__init__(self, parent, pos=pos, size=size)
+        wx.ScrolledWindow.__init__(self, parent, pos=pos, size=size)
         self.SetBackgroundStyle(wx.BG_STYLE_PAINT)
         
-        ### la scrollbar apparait mais ne fonctionne pas....
-#        self.scroll = wx.ScrollBar(self, -1, pos=(TRACKNAME_POS[0],TRACKNAME_POS[1]+(TRACK_TOTAL*GRID_STEP)),
-#                                   size=(GRID_SIZE[0],15), style=wx.SB_HORIZONTAL)
         self.zoom = zoom
         self.pos = None
         self.create = False
         self.catch = False
+        self.recSize = False
         self.rec = None
+        self.dragX = 0
+        self.dragY = 0
         
-        
-
 #        self.Bind(wx.EVT_SCROLL, self.onScroll)
         self.Bind(wx.EVT_PAINT, self.onPaint)
         self.Bind(wx.EVT_LEFT_DOWN, self.onMouseLeftDown)
@@ -29,46 +27,55 @@ class Grid(wx.Panel):
         self.Bind(wx.EVT_RIGHT_UP,self.onMouseRightUp)
         self.Bind(wx.EVT_MOTION, self.onMotion)  
                                       
-                                      
-                                                        
+                                                                                              
 ######### MOUSE METHODS #####
     def onMouseLeftDown(self,e):
         self.CaptureMouse()
         self.pos = self.clip(e.GetPositionTuple())
-        mx = self.pos[0]/self.zoom
-        my = self.pos[1]
-        
-        if not self.catch:
-            self.rectangle = Rectangle(mx, my)     ### Creation du rectangle
-            RECTANGLES.append(self.rectangle)                       ### ajout a la liste des RECTANGLES 
+        posX = self.pos[0]/self.zoom
+        posY = self.pos[1]
+                
+        for rec in RECTANGLES:
+            if rec.isInside((posX,posY)):
+                self.rec = rec
+                self.create = False
+                self.catch = True
+                self.dragX = posX - self.rec.X
+                self.dragY = posY - self.rec.Y
+                print "catch to move!"
+                break
+                
+        if self.catch:
+            if self.pos[0] >= self.rec.width - 4:
+                self.catch = False
+                self.recSize = True   ##### concept a revoir!!!!!!!!
+     
+        if not self.catch and not self.recSize:
+            self.rectangle = Rectangle(posX, posY)
+            RECTANGLES.append(self.rectangle) 
             self.create = True
-        
-            for rec in RECTANGLES:
-                if rec.isInside(self.pos):
-                    self.rec = rec
-                    self.create = False
-                    self.catch = True
-                    print "catch to move!"
-                    break
+            
         
     def onMotion(self,e):
         if self.HasCapture():
             self.pos = self.clip(e.GetPositionTuple())
-            mx = self.pos[0]/self.zoom
-            my = self.pos[1]
+            posX = self.pos[0]/self.zoom
+            posY = self.pos[1]
+            
+            if self.recSize:
+                self.rec.width = posX - self.dragX
+                self.recSize = False
             
             if self.catch:
-                self.rec.X = mx 
-                self.rec.Y = my
-                self.Refresh()
-                #self.catch = False
+                self.rec.X = max(0,posX - self.dragX)
+                self.rec.Y = min(posY - self.dragY, GRID_SIZE[1] - SCROLLBAR) 
                 
             if self.create: 
-                           
                 if self.pos[0] - RECTANGLES[-1].X > 0:
-                    RECTANGLES[-1].width = max(0,mx-RECTANGLES[-1].X)
-                    self.Refresh()
-                    #self.create = False
+                    RECTANGLES[-1].width = max(0,posX-RECTANGLES[-1].X)
+                    
+            self.Refresh()
+
 
     def onMouseLeftUp(self,e):
         if self.HasCapture():
@@ -76,25 +83,29 @@ class Grid(wx.Panel):
             self.pos = self.clip(e.GetPositionTuple())
             if self.create:
                 self.create = False
-                if self.pos[0] - RECTANGLES[-1].getX() > 0:     ### si la souris bouge
+                if self.pos[0] - RECTANGLES[-1].X > 0:
                     print "Append RECTANGLES:", RECTANGLES 
      
                 else:     
-                    RECTANGLES.pop()       ### les coordonnées créer avec le onMouseLeftDown s'efface
+                    RECTANGLES.pop()
                     print 
                     print "Remove RECTANGLES:", RECTANGLES 
                     print
                 
             if self.catch:
                 self.catch = False
+                if self.rec.width <= 0:
+                    RECTANGLES.remove(rec)
                     
 
     def onMouseRightDown(self,e):
         self.CaptureMouse()
         self.pos = self.clip(e.GetPositionTuple()) 
+        posX = self.pos[0]/self.zoom
+        posY = self.pos[1]        
         
         for rec in RECTANGLES:
-            if rec.isInside(self.pos):      ## determine si le curseur a cliqué dans un rectangle
+            if rec.isInside((posX,posY)):
                 print "ATTRAPPE"
                 break
                 
@@ -102,19 +113,16 @@ class Grid(wx.Panel):
         if self.HasCapture():
             self.ReleaseMouse()
             self.pos = self.clip(e.GetPositionTuple())
-            
+            posX = self.pos[0]/self.zoom
+            posY = self.pos[1]  
+                      
             for rec in RECTANGLES:
-                if rec.isInside(self.pos):
+                if rec.isInside((posX,posY)):
                     print "ERASE", rec
                     RECTANGLES.remove(rec)
                     wx.CallAfter(self.Refresh)
                     break
-                    
-#                else:
-#                    print "RELACHE"
 
-                    
-                    
 
 ######## PAINT METHOD #######
 
@@ -134,12 +142,7 @@ class Grid(wx.Panel):
         if RECTANGLES is not []:          
             for rec in RECTANGLES:
                 rec.draw(dc,self.zoom,"#000099", "#0000ff")
-                
-#    def onScroll(self,e):
-#        thumbPos = self.scroll.GetThumbPosition()
-#        self.scroll.SetScrollbar(thumbPos,GRID_SIZE[0]/self.zoom,GRID_SIZE[0]*self.zoom,GRID_SIZE[0]/self.zoom)
-            
-            
+
             
 ######### GENERALS METHODS #######
     def clip(self,pos):
@@ -156,8 +159,8 @@ class Grid(wx.Panel):
             pos[1] = TIMELINE_SIZE[1]
             pos[1] = pos[1] - (pos[1] % GRID_STEP)
             
-        elif pos[1] > GRID_SIZE[1]:
-            pos[1] = GRID_SIZE[1]
+        elif pos[1] > GRID_SIZE[1] - SCROLLBAR:
+            pos[1] = GRID_SIZE[1] - SCROLLBAR
             pos[1] = pos[1] - (pos[1] % GRID_STEP)
             
         else:
