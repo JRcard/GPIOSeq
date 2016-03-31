@@ -54,10 +54,10 @@ class Scene(wx.Panel):
             self.track = Track(self,-1, 
                                "GPIO%02d" % (i+1), 
                                pos=(TRACKNAME_POS[0],TRACKNAME_POS[1]+(i*GRID_STEP)), 
-                               size=(59,GRID_STEP))
+                               size=(59,GRID_STEP-1))
                                
             TRACKS.append(self.track)
-            trackSize.Add(TRACKS[i])
+            trackSize.Add(TRACKS[i],0,wx.TOP,1)
             
         
         

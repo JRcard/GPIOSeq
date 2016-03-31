@@ -25,8 +25,8 @@ class Rectangle(wx.Rect):
         dc.DrawRectangle(self.X*zoom,self.Y,self.width*zoom,self.heigth)
 
        
-    def isInside(self,x):
-        return self.Contains(x)
+#    def isInside(self,x):
+#        return self.Contains(x)
         
     def getTrackNum(self):
         self.trackNum = self.Y / self.heigth - 1 
