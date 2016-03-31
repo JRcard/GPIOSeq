@@ -37,5 +37,5 @@ def prepareDictGPIO():
 # Reset le dictionnaire         
 def clearDictGPIO():
     global dictGPIO
-    if dictGPIO != None:
+    if dictGPIO is not None:
         dictGPIO.clear()  

@@ -19,6 +19,6 @@ TIMELINE_POS = (0,15)
 TIMELINE_SIZE = (GRID_SIZE[0], 40)
 
 TIME_TOTAL = 6  ### nombre total de minute de la grille ne peut dépasser.(Ce nombre comme tel est exclus. Lire comme un range de x valeur)
-TIME_ABS = 13 ### facteur de multiplication de GRID_STEP pour un zoom de 1
+TIME_ABS = 20 ### facteur de multiplication de GRID_STEP pour un zoom de 1
 TIMELINE_MINUTE = TIME_ABS * GRID_STEP       ### nbrs de pixel dans 1 minutes.
 TIMELINE_UNIT = 60. / TIMELINE_MINUTE     ## valeur en sec de 1 pixel

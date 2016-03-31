@@ -67,15 +67,28 @@ class Grid(wx.ScrolledWindow):
 
 
     def onMotion(self,e):
-        if self.HasCapture():
-            self.pos = self.clip(e.GetPositionTuple())
-            posX = self.pos[0] / self.zoom
-            posY = self.pos[1]
-            
-            if self.rightCatch and self.rec.isInside((posX,posY)):
-                    pass
+        self.pos = self.clip(e.GetPositionTuple())
+        posX = self.pos[0] / self.zoom
+        posY = self.pos[1]
+        
+        if not self.HasCapture():
+
+            for rec in RECTANGLES:
+                if rec.isInside((posX, posY)):
+                    self.rec = rec
+                    break
+                else:
+                    self.rec = None
+                    
+            if self.rec is not None and posX >= self.rec.X + (self.rec.width - 4) and posX <= self.rec.X + self.rec.width:
+                self.SetCursor(self.sizeCursor)
+            elif self.rec is not None:
+                self.SetCursor(self.moveCursor)
             else:
-                self.rightCatch = False
+                self.SetCursor(self.regCursor)
+
+            
+        elif self.HasCapture():
                 
             if self.create: 
                 if self.pos[0] - self.newRec.X > 0:
@@ -156,6 +169,7 @@ class Grid(wx.ScrolledWindow):
                 print "ERASE", self.rec
                 RECTANGLES.remove(self.rec)
                 self.rec = None
+                self.SetCursor(self.regCursor)
                 wx.CallAfter(self.Refresh)
                 
             else:
