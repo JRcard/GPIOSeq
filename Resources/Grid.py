@@ -8,7 +8,8 @@ from widgets import *
 class Grid(wx.ScrolledWindow):
     def __init__(self, parent, pos, size, zoom=1):
         wx.ScrolledWindow.__init__(self, parent, pos=pos, size=size, style=wx.TAB_TRAVERSAL)     
-        self.scSize = wx.BoxSizer(wx.HORIZONTAL)  
+        bs = wx.BoxSizer(wx.HORIZONTAL) 
+        self.size = bs 
         
         self.SetBackgroundStyle(wx.BG_STYLE_PAINT)
         self.regCursor = wx.StockCursor(wx.CURSOR_ARROW)
