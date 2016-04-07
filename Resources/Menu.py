@@ -4,6 +4,7 @@
 import os
 import wx
 from Grid import *
+from Scene import *
 from Template import *
 from variables import *
 
@@ -61,6 +62,8 @@ class SeqMenu(wx.MenuBar):
 ########   MENU  -------methods-------  ##########
 
     def onExit(self, e):
+#        if self.grid.sshLogin is not None:
+#            self.grid.sshLogin.logout()
 #        dlg = wx.MessageDialog(self, 
 #            "Do you really want to close this application?",
 #            "Confirm Exit", wx.OK|wx.CANCEL|wx.ICON_QUESTION)

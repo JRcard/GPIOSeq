@@ -1,14 +1,19 @@
 # encoding: utf-8
+import os
 
-RASPI = "ssh pi@thebat.local"
-PASSWORD = "echo protools"
+REMOTE_HOST = "thebat.local"
+REMOTE_USER = "pi"
+REMOTE_PASS = "protools"
+REMOTE_DIR = "/home/pi"
+LOCAL_HOST = "Jrcard@MacPro.local"
+LOCAL_PASS = "protools10.30"
 TEMPFILE = "tempGPIOSeq.py"
-TEMPDIR = "/Users/Jrcard/Documents/"
+TEMPDIR = os.getcwd()
 ########################      GRID       #######
 GRID_POS = (67,100)
 GRID_SIZE = (1360,595)   
 GRID_STEP = 20
-SCROLLBAR = 35
+SCROLLBAR = 15
 #######################       TRACKNAME   #######
 TRACK_TOTAL = 27
 TRACKNAME_POS = (1,40)

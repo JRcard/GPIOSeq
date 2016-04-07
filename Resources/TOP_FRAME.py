@@ -12,7 +12,7 @@ class SeqFrame(wx.Frame):
     def __init__(self, parent, title):
         wx.Frame.__init__(self, parent, title=title)
         self.scene = Scene(self)
-        
+
 ######## MENU ################
         self.menu = SeqMenu(self)
         self.SetMenuBar(self.menu)
@@ -22,10 +22,10 @@ class SeqFrame(wx.Frame):
 
 ######## create status bar ###
 
-        status = self.CreateStatusBar()  
-        
+        status = self.CreateStatusBar()
+
 ######## METHODES ############  
-   
+
         self.Maximize()
         self.Show()
 
