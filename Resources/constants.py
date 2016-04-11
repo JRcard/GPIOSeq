@@ -1,14 +1,4 @@
 # encoding: utf-8
-import os
-
-REMOTE_HOST = "thebat.local"
-REMOTE_USER = "pi"
-REMOTE_PASS = "protools"
-REMOTE_DIR = "/home/pi"
-LOCAL_HOST = "Jrcard@MacPro.local"
-LOCAL_PASS = "protools10.30"
-TEMPFILE = "tempGPIOSeq.py"
-TEMPDIR = os.getcwd()
 ########################      GRID       #######
 GRID_POS = (67,100)
 GRID_SIZE = (1360,595)   

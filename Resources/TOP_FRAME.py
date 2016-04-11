@@ -25,7 +25,6 @@ class SeqFrame(wx.Frame):
         status = self.CreateStatusBar()
 
 ######## METHODES ############  
-
         self.Maximize()
         self.Show()
 

@@ -15,6 +15,7 @@ class SeqMenu(wx.MenuBar):
         wx.MenuBar.__init__(self)
         
         self.parent = parent
+        
         # create each menu itself who will go on the menu bar
 
         self.file = wx.Menu()
@@ -28,10 +29,13 @@ class SeqMenu(wx.MenuBar):
         self.menuSave = self.file.Append(wx.ID_SAVE, "&Save\tCtrl+S", "Save a File")
         self.file.AppendSeparator()
         self.menuExport = self.file.Append(100, "Export\tCtrl+E", "Export data")
+#        self.file.AppendSeparator()
+#        self.menuPref = self.file.Append(101,"Preferences\tCtrl+,", "Path and login preferences")
         self.file.AppendSeparator()
         self.menuExit = self.file.Append(wx.ID_EXIT, "E&xit", "Terminate the program")
                 
-        # Put the "Edit" menu on the menu bar and put action in this menu           
+        # Put the "Edit" menu on the menu bar and put action in this menu   
+        # TO DO: Undo, Redo        
         self.Append(self.edit, "&Edit")
         self.menuCopy = self.edit.Append(wx.ID_COPY, "&Copy", "Copy the selection")
         self.menuPaste = self.edit.Append(wx.ID_PASTE, "&Paste", "Paste the last copy")
@@ -40,19 +44,18 @@ class SeqMenu(wx.MenuBar):
         self.Append(self.help, "&Help")
         self.menuHelp = self.help.Append(wx.ID_ABOUT, "&About", "Information about this program")
 
-###### Binding menu bar ###########
-
-        # PROGRAM
-        self.Bind(wx.EVT_MENU, self.onExit, self.menuExit)
-        self.Bind(wx.EVT_MENU, self.onExport, self.menuExport, id=100)
-        
-        
+###### Binding menu bar ##########
         # FILE
         self.Bind(wx.EVT_MENU, self.onNew, self.menuNew)
         self.Bind(wx.EVT_MENU, self.onOpen, self.menuOpen)
         self.Bind(wx.EVT_MENU, self.onSave, self.menuSave)
+        self.Bind(wx.EVT_MENU, self.onExit, self.menuExit)
+        self.Bind(wx.EVT_MENU, self.onExport, self.menuExport, id=100)
+#        self.Bind(wx.EVT_MENU, self.onPref, self.menuPref, id=101)
         
-        # EDIT  ### TO DO: Undo, Redo
+        # EDIT  ##
+        
+        # TO DO: Undo, Redo
         #self.Bind(wx.EVT_MENU, self.onCopy, self.menuCopy)
         #self.Bind(wx.EVT_MENU, self.onPaste, self.menuPaste)
         
@@ -106,14 +109,15 @@ class SeqMenu(wx.MenuBar):
             RECTANGLES = f.read()
             print RECTANGLES
             f.close()  
+            
         dlg.Destroy()
         
     def onSave(self,e):
         self.dirname = ' '
         dlg = wx.FileDialog(self, "Save your file", self.dirname, "", "*.txt", wx.SAVE | wx.OVERWRITE_PROMPT)
         if dlg.ShowModal() == wx.ID_OK:
-            prepareDictGPIO()
-            itcontains = str(RECTANGLES) + str(dictGPIO)
+
+            itcontains = str(RECTANGLES)
             
             self.filename = dlg.GetFilename()
             print self.filename
@@ -125,6 +129,7 @@ class SeqMenu(wx.MenuBar):
                
         dlg.Destroy()
         
+
     def onAbout(self,e):
         dlg = wx.MessageDialog(self, "A sequencer for GPIO", "About SeqGPIO", wx.OK)  
         dlg.ShowModal()

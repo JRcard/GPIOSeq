@@ -18,7 +18,7 @@ def setGPIO(key):
 def getGPIO(key):
     return dictGPIO.get(key, None)
 
-# Met les instances Rect en ordre chronologique. Ce cette liste en ordre, le dictionnaire se rempli.    
+# Met les instances Rect en ordre chronologique. De cette liste en ordre, le dictionnaire se rempli.    
 def prepareDictGPIO():
     RECTANGLES.sort(key=lambda x: x[0])
     print RECTANGLES
