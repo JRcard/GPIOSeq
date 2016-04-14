@@ -29,23 +29,23 @@ def blink(pin):
         if i == 0:
             start = dictGPIO[pin]["RECT_START"][i]
             width = dictGPIO[pin]["RECT_WIDTH"][i]
-            print "pin %d StandBy" % pin, start, time.time()
+            print "pin ", pin ," StandBy", start, time.time()
             time.sleep(start)              # start time
             GPIO.output(pin, 1)
-            print "pin %d 'ON' for %0f sec" % (pin,width), time.time()
+            print "pin ", pin, "'ON' for ", width, " sec", time.time()
             time.sleep(width)              # width time
             GPIO.output(pin, 0)
-            print "pin %d off" % pin, time.time()
+            print "pin ", pin, " off", time.time()
         else:
             start = (dictGPIO[pin]["RECT_START"][i] - dictGPIO[pin]["RECT_STOP"][i-1])
             width = dictGPIO[pin]["RECT_WIDTH"][i]
-            print "pin %d StandBy" % pin, start, time.time()
+            print "pin ", pin ," StandBy", start, time.time()
             time.sleep(start)              # start time
             GPIO.output(pin, 1)
-            print "pin %d 'ON' for %0f sec" % (pin,width), time.time()
+            print "pin ", pin, "'ON' for ", width, " sec", time.time()
             time.sleep(width)              # width time
             GPIO.output(pin, 0)
-            print "pin %d off" % pin, time.time()
+            print "pin ", pin, " off", time.time()
     
 PROCESS = []
 print "loop process begins"

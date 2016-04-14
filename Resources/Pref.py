@@ -2,17 +2,13 @@
 
 import os, socket, getpass, wx
 
-
-#REMOTE_HOST = "thebat.local"
-#REMOTE_USER = "pi"
-#REMOTE_PASS = "protools"
 REMOTE_DIR = "/home/pi"
 LOCAL_HOST = getpass.getuser() + "@" + socket.gethostname() + ".local"
-print LOCAL_HOST
-#LOCAL_PASS = "protools10.30"
+
 TEMPFILE = "tempGPIOSeq.py"
 TEMPDIR = os.getcwd()
-PREFS = {"REMOTE_USER": "", "REMOTE_HOST": "", "REMOTE_PASS": "", "LOCAL_PASS":""}
+#PREFS = {"REMOTE_USER": "", "REMOTE_HOST": "", "REMOTE_PASS": "", "LOCAL_PASS":""}
+PREFS = {"REMOTE_USER": "pi", "REMOTE_HOST": "thebat.local", "REMOTE_PASS": "protools", "LOCAL_PASS":"protools10.30"}
 
 class PrefDlg(wx.Dialog):
     def __init__(self, parent, title="Login Prefs"):                  
@@ -59,5 +55,3 @@ class PrefDlg(wx.Dialog):
         PREFS["LOCAL_PASS"] = self.localPassText.GetValue()
         
         print PREFS
-        
-        #### to do!! Error msg if any of the pref are wrong!! ######

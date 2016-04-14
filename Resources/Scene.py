@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-import wx, os
+import wx, os, sys
 from constants import *
 from variables import *
 from Template import *
@@ -82,8 +82,6 @@ class Scene(wx.Panel):
 ######## METHODES 
     def onLogin(self,e):
         
-## TO DO: error flag if any of the prefs are wrong!!! ###
-
         if not self.isPrefFilled():
             self.onPref(e)
             
@@ -94,18 +92,17 @@ class Scene(wx.Panel):
                 self.sshLogin.force_password = True
                 self.sshLogin.login(PREFS["REMOTE_HOST"],PREFS["REMOTE_USER"],PREFS["REMOTE_PASS"],auto_prompt_reset=False)
                 print "step: 1 Raspi login!"
-                #to do:  témoin visuel de connectivité
                 
             except px.ExceptionPxssh,e:
+                dlg = wx.MessageDialog(self, "Fail on login: " + str(e) + "\nLook in the login preferences.", style=wx.ICON_EXCLAMATION)
+                dlg.ShowModal()
+                dlg.Destroy()
                 print "Fail on login"
                 print str(e)
-                    
 
-                
         if self.login.GetValue() == 0 and self.sshLogin is not None:
             self.sshLogin.logout()
             print "Raspi logout!"
-
 
 
     def onStart(self,e):
@@ -119,16 +116,16 @@ class Scene(wx.Panel):
                 
                 text = SETUP % (str(dictGPIO))
                 text += SEQUENCE
-                pathFile = os.path.join(TEMPDIR, TEMPFILE)
-                print pathFile
-                f = open(pathFile, "w")
+                localPathFile = os.path.join(TEMPDIR, TEMPFILE)
+                print localPathFile
+                f = open(localPathFile, "w")
                 f.write(text)
                 f.close() 
                 clearDictGPIO()
                 
     ###################################### Transfer file ###################           
-                #self.login.expect("$")
-                self.sshLogin.sendline("scp " + LOCAL_HOST + ":" + pathFile + " " + REMOTE_DIR)
+                self.sshLogin.expect("$")
+                self.sshLogin.sendline("scp " + LOCAL_HOST + ":" + localPathFile + " " + REMOTE_DIR)
                 
             #    if s.expect("are you sure you want to continue connecting"):
             #        s.sendline("yes")
@@ -141,23 +138,29 @@ class Scene(wx.Panel):
                 print
                 print "File tranfered"
     ###################################### Transfer file end #################   
-               # TODO: delete tempFile
+
                 self.sshLogin.expect("$")
                 self.sshLogin.sendline("sudo python " + TEMPFILE)
                 print "RUUUN!"
-    #            self.sshLogin.prompt()
-    #            print self.sshLogin.before
+#                self.sshLogin.prompt()
+#                print self.sshLogin.before
+                
                 
             else:
+                remotePathFile = os.path.join(REMOTE_DIR, TEMPFILE)
                 self.playStop.SetLabel("Play")
                 print "stoped"
-                self.sshLogin.sendline("Ctrl+C")
+                self.sshLogin.sendline("killall -9 python")
+                self.sshLogin.expect("$")
+                self.sshLogin.sendline("rm" + remotePathFile)
+                os.remove(TEMPFILE)
                 ## TO DO tempfile for gpio.cleanup()
                 
         else:
             dlg = wx.MessageDialog(self, "you must be log in to start the Seq")
             dlg.ShowModal()
             dlg.Destroy()
+            self.onPref(e)
             print "you must be log in to start the Seq"
 
     def onLoop(self,e):
@@ -169,12 +172,13 @@ class Scene(wx.Panel):
     def onZoom(self,e):
         zoom = self.zoom.GetValue()
         self.grid.setZoom(zoom)
+        self.grid.sizer.Show(self,True)
         w,h = self.grid.GetMinSize()
         self.SetVirtualSize((w*zoom,h))
         self.grid.Refresh()
         
     def onPref(self, e):
-        ## TO DO: error flag if any of the prefs are wrong!!! ###
+
         dlg = PrefDlg(self)
         if dlg.ShowModal() == wx.ID_OK:
             dlg.setPref()

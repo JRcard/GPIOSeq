@@ -275,7 +275,7 @@ class ScrollGrid(wx.ScrolledWindow):
         wx.ScrolledWindow.__init__(self, parent, pos=pos, size=size)
         self.sizer = wx.BoxSizer(wx.HORIZONTAL)
 
-        self.grid = Grid(self, pos=GRID_POS, size=GRID_SIZE)
+        self.grid = Grid(self, pos=pos, size=size)
 
         self.sizer.Add(self.grid)
         self.SetSizer(self.sizer)
