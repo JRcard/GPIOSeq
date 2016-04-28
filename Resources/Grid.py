@@ -18,15 +18,15 @@ class Grid(wx.Panel):
         self.zoom = zoom
         self.pos = None
         self.create = False
-        self.recMove = False
-        self.recErase = False
-        self.recSize = False
-        self.newRec = None
-        self.rec = None
+        self.rectMove = False
+        self.rectErase = False
+        self.rectSize = False
+        self.newRect = None
+        self.rect = None
         self.dragX = 0
         self.dragY = 0
 
-#        self.Bind(wx.EVT_SCROLL, self.onScroll)
+
         self.Bind(wx.EVT_PAINT, self.onPaint)
         self.Bind(wx.EVT_LEFT_DOWN, self.onMouseLeftDown)
         self.Bind(wx.EVT_LEFT_UP, self.onMouseLeftUp)
@@ -44,25 +44,25 @@ class Grid(wx.Panel):
         posX = self.pos[0] / self.zoom
         posY = self.pos[1]
 
-        self.onRec(posX,posY)
+        self.onRect(posX,posY)
 
-        if self.rec == None:
+        if self.rect == None:
             self.rectangle = Rectangle(posX, posY) 
-            self.newRec = self.rectangle
+            self.newRect = self.rectangle
             self.create = True
 
-        elif self.rec is not None and self.recSizeContains(posX):
-            self.recSize = True
+        elif self.rect is not None and self.rectSizeContains(posX):
+            self.rectSize = True
             self.SetCursor(self.sizeCursor)
-            self.dragX = posX - self.rec.width
-            print "catch to resize!", self.rec
+            self.dragX = posX - self.rect.width
+            print "catch to resize!", self.rect
 
-        elif self.rec is not None and not self.recErase:
-            self.recMove = True
+        elif self.rect is not None and not self.rectErase:
+            self.rectMove = True
             self.SetCursor(self.moveCursor)
-            self.dragX = posX - self.rec.X
-            self.dragY = posY - self.rec.Y
-            print "catch to move!", self.rec
+            self.dragX = posX - self.rect.X
+            self.dragY = posY - self.rect.Y
+            print "catch to move!", self.rect
 
 
     def onMotion(self,e):
@@ -72,12 +72,12 @@ class Grid(wx.Panel):
 
         if not self.HasCapture():
 
-            self.onRec(posX,posY)
+            self.onRect(posX,posY)
 
-            if self.rec is not None and self.recSizeContains(posX):
+            if self.rect is not None and self.rectSizeContains(posX):
                 self.SetCursor(self.sizeCursor)
 
-            elif self.rec is not None:
+            elif self.rect is not None:
                 self.SetCursor(self.moveCursor)
 
             else:
@@ -87,23 +87,23 @@ class Grid(wx.Panel):
         elif self.HasCapture():
 
             if self.create: 
-                if self.pos[0] - self.newRec.X <= 0:
+                if self.pos[0] - self.newRect.X <= 0:
                     self.create = False
-                    self.newRec = None
+                    self.newRect = None
                 else:
-                    self.newRec.width = max(0, posX - self.newRec.X)
+                    self.newRect.width = max(0, posX - self.newRect.X)
 
-            elif self.recSize:
-                self.rec.width = max(1, posX - self.dragX)
+            elif self.rectSize:
+                self.rect.width = max(1, posX - self.dragX)
 
-            elif self.recMove and not self.recErase:
-                self.rec.X = max(0, posX - self.dragX)
-                self.rec.Y = min(posY - self.dragY, GRID_SIZE[1] - SCROLLBAR)
+            elif self.rectMove and not self.rectErase:
+                self.rect.X = max(0, posX - self.dragX)
+                self.rect.Y = min(posY - self.dragY, GRID_SIZE[1] - SCROLLBAR)
 
-            elif self.recErase and not self.rec.ContainsXY(posX,posY):
+            elif self.rectErase and not self.rect.ContainsXY(posX,posY):
                 self.SetCursor(self.regCursor)
 
-            elif self.recErase and self.rec.ContainsXY(posX,posY):
+            elif self.rectErase and self.rect.ContainsXY(posX,posY):
                 self.SetCursor(self.eraseCursor)
 
 
@@ -116,25 +116,25 @@ class Grid(wx.Panel):
             self.pos = self.clip(e.GetPositionTuple())
             if self.create:
                 self.create = False
-                if self.pos[0]/self.zoom - self.newRec.X > 0:
-                    RECTANGLES.append(self.newRec)
-                    self.newRec = None
+                if self.pos[0]/self.zoom - self.newRect.X > 0:
+                    RECTANGLES.append(self.newRect)
+                    self.newRect = None
                     print "Append RECTANGLES:", RECTANGLES 
                     print
 
-                elif self.newRec in RECTANGLES:
-                    RECTANGLES.remove(self.newRec)
+                elif self.newRect in RECTANGLES:
+                    RECTANGLES.remove(self.newRect)
                     print 
                     print "Remove RECTANGLES:", RECTANGLES 
                     print
 
-            elif self.recSize:
-                self.recSize = False
+            elif self.rectSize:
+                self.rectSize = False
                 self.SetCursor(self.regCursor)
                 print "Resized RECTANGLES:", RECTANGLES
 
-            elif self.recMove:
-                self.recMove = False
+            elif self.rectMove:
+                self.rectMove = False
                 print "Moved RECTANGLES:", RECTANGLES
 
             self.Refresh()
@@ -146,11 +146,11 @@ class Grid(wx.Panel):
         posX = self.pos[0]/self.zoom
         posY = self.pos[1]
 
-        self.onRec(posX,posY)
-        print "ATTRAPPE", self.rec
+        self.onRect(posX,posY)
+        print "ATTRAPPE", self.rect
 
-        if self.rec is not None:
-            self.recErase = True
+        if self.rect is not None:
+            self.rectErase = True
             self.SetCursor(self.eraseCursor)
 
     def onMouseRightUp(self,e):
@@ -161,19 +161,19 @@ class Grid(wx.Panel):
             posY = self.pos[1]
 
 
-            if self.recErase and self.rec.ContainsXY(posX,posY):
-                self.recErase = False
-                print "ERASE", self.rec
-                RECTANGLES.remove(self.rec)
+            if self.rectErase and self.rect.ContainsXY(posX,posY):
+                self.rectErase = False
+                print "ERASE", self.rect
+                RECTANGLES.remove(self.rect)
                 print
                 print "Erased RECTANGLES:", RECTANGLES
-                self.rec = None
+                self.rect = None
                 self.SetCursor(self.regCursor)
                 wx.CallAfter(self.Refresh)
 
             else:
-                self.recErase = False
-                print "ECHAPPE", self.rec
+                self.rectErase = False
+                print "ECHAPPE", self.rect
 
 
 ######## PAINT METHOD #######
@@ -191,11 +191,11 @@ class Grid(wx.Panel):
         self.squares(dc)
 
         # RECTANGLE #######
-        if self.newRec is not None:
-            self.newRec.draw(dc,self.zoom,"#aa0000", "#000000")
+        if self.newRect is not None:
+            self.newRect.draw(dc,self.zoom,"#aa0000", "#000000")
         if RECTANGLES is not []:
-            for rec in RECTANGLES:
-                rec.draw(dc,self.zoom,"#000099", "#0000ff")
+            for rect in RECTANGLES:
+                rect.draw(dc,self.zoom,"#000099", "#0000ff")
 
 
 ######### GENERALS METHODS #######
@@ -224,20 +224,20 @@ class Grid(wx.Panel):
     def setZoom(self,z):
         self.zoom = z
         
-    def recSizeContains(self,posX):
-        if posX >= self.rec.X + (self.rec.width - 4) and posX <= self.rec.X + self.rec.width:
+    def rectSizeContains(self,posX):
+        if posX >= self.rect.X + (self.rect.width - 4) and posX <= self.rect.X + self.rect.width:
             return True
 
         else:
             return False
 
-    def onRec(self,posX,posY):
-        for rec in RECTANGLES:
-            if rec.ContainsXY(posX, posY):
-                self.rec = rec
+    def onRect(self,posX,posY):
+        for rect in RECTANGLES:
+            if rect.ContainsXY(posX, posY):
+                self.rect = rect
                 break
             else:
-                self.rec = None
+                self.rect = None
 
 
 ### comment je fais pour savoir que ma grille s'élargit vraiment 

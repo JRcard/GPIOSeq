@@ -7,8 +7,8 @@ LOCAL_HOST = getpass.getuser() + "@" + socket.gethostname() + ".local"
 
 TEMPFILE = "tempGPIOSeq.py"
 TEMPDIR = os.getcwd()
-#PREFS = {"REMOTE_USER": "", "REMOTE_HOST": "", "REMOTE_PASS": "", "LOCAL_PASS":""}
-PREFS = {"REMOTE_USER": "pi", "REMOTE_HOST": "thebat.local", "REMOTE_PASS": "protools", "LOCAL_PASS":"protools10.30"}
+PREFS = {"REMOTE_USER": "", "REMOTE_HOST": "", "REMOTE_PASS": "", "LOCAL_PASS":""}
+#PREFS = {"REMOTE_USER": "pi", "REMOTE_HOST": "thebat.local", "REMOTE_PASS": "", "LOCAL_PASS":""}
 
 class PrefDlg(wx.Dialog):
     def __init__(self, parent, title="Login Prefs"):                  
@@ -17,7 +17,7 @@ class PrefDlg(wx.Dialog):
         
         self.piUserLabel = wx.StaticText(self, -1, "Pi Username")
         self.piUserText = wx.TextCtrl(self, -1, "%s" % PREFS["REMOTE_USER"], size=(80,20))
-        self.piHostLabel = wx.StaticText(self, -1, "Pi Hostname (ends with .local or just the Ip adress)")
+        self.piHostLabel = wx.StaticText(self, -1, "Pi Hostname")
         self.piHostText = wx.TextCtrl(self, -1, "%s" % PREFS["REMOTE_HOST"], size=(80,20))
         self.piPassLabel = wx.StaticText(self, -1, "Pi Password")
         self.piPassText = wx.TextCtrl(self, -1, "%s" % PREFS["REMOTE_PASS"], style=wx.TE_PASSWORD)
@@ -50,7 +50,7 @@ class PrefDlg(wx.Dialog):
 
     def setPref(self):
         PREFS["REMOTE_USER"] = self.piUserText.GetValue()
-        PREFS["REMOTE_HOST"] = self.piHostText.GetValue()
+        PREFS["REMOTE_HOST"] = self.piHostText.GetValue() + ".local"
         PREFS["REMOTE_PASS"] = self.piPassText.GetValue()
         PREFS["LOCAL_PASS"] = self.localPassText.GetValue()
         

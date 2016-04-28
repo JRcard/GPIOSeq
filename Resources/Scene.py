@@ -52,6 +52,8 @@ class Scene(wx.Panel):
 
 
 ######## GRID ##########
+        ## j'ai passé vraiment beaucoup de temps à analyser et a essayer plein de façon pour avoir une scrollbar et rien n'y fait...
+        ## aussi je souhaiterais que la scrollBar soit local sur ma grid et non sur le main_frame.
         self.grid = ScrollGrid(self, pos=GRID_POS, size=GRID_SIZE)
 
 
@@ -84,6 +86,7 @@ class Scene(wx.Panel):
         
         if not self.isPrefFilled():
             self.onPref(e)
+            self.login.SetValue(0)
             
         elif self.login.GetValue() == 1 and self.isPrefFilled():
 
@@ -94,6 +97,8 @@ class Scene(wx.Panel):
                 print "step: 1 Raspi login!"
                 
             except px.ExceptionPxssh,e:
+                ## il me reste encore des trucs a apprendre sur la gestion de certaines erreurs de login dans pexpect. 
+                ## Je devrai créer plein de problemes et pour ensuite créer les msg qui s'y rattache.
                 dlg = wx.MessageDialog(self, "Fail on login: " + str(e) + "\nLook in the login preferences.", style=wx.ICON_EXCLAMATION)
                 dlg.ShowModal()
                 dlg.Destroy()
@@ -127,18 +132,21 @@ class Scene(wx.Panel):
                 self.sshLogin.expect("$")
                 self.sshLogin.sendline("scp " + LOCAL_HOST + ":" + localPathFile + " " + REMOTE_DIR)
                 
+    #####################################################################################################
+            ### si c'est la premiere fois que le raspberry est connecté en ssh avec l'ordinateur de l'utilisateur
+            ### je ne peux plus le tester... ou bien c'est mal monté car ça ne fonctionne pas... à suivre.
             #    if s.expect("are you sure you want to continue connecting"):
             #        s.sendline("yes")
             #        print "I said yes"
+            
             ################################### PASSWORDLOCAL ############
-
                 self.sshLogin.expect("Password:")
                 self.sshLogin.sendline(PREFS["LOCAL_PASS"])
                 print "password? Local password"
                 print
                 print "File tranfered"
+                
     ###################################### Transfer file end #################   
-
                 self.sshLogin.expect("$")
                 self.sshLogin.sendline("sudo python " + TEMPFILE)
                 print "RUUUN!"
@@ -147,6 +155,8 @@ class Scene(wx.Panel):
                 
                 
             else:
+                ### Ne fonctionne pas... Comment envoyer une commande dans le raspberry pour arrêter un process... 
+                ### l'équivalent du ctrl+C directement dans le terminal....
                 remotePathFile = os.path.join(REMOTE_DIR, TEMPFILE)
                 self.playStop.SetLabel("Play")
                 print "stoped"
@@ -157,7 +167,7 @@ class Scene(wx.Panel):
                 ## TO DO tempfile for gpio.cleanup()
                 
         else:
-            dlg = wx.MessageDialog(self, "you must be log in to start the Seq")
+            dlg = wx.MessageDialog(self, "you must be log in to start the Seq", style=wx.OK|wx.ICON_EXCLAMATION)
             dlg.ShowModal()
             dlg.Destroy()
             self.onPref(e)
@@ -177,17 +187,14 @@ class Scene(wx.Panel):
         self.SetVirtualSize((w*zoom,h))
         self.grid.Refresh()
         
-    def onPref(self, e):
+    def onPref(self,e):
 
         dlg = PrefDlg(self)
         if dlg.ShowModal() == wx.ID_OK:
             dlg.setPref()
             self.login.SetValue(1)
             self.onLogin(e)
-            
-        elif dlg.ShowModal == wx.ID_CANCEL:
-            if self.login.GetValue() == 1:
-                self.login.SetValue(0)
+
 
         dlg.Destroy()
         

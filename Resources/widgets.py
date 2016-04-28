@@ -24,9 +24,6 @@ class Rectangle(wx.Rect):
         dc.SetBrush(wx.Brush(brush)) 
         dc.DrawRectangle(self.X*zoom,self.Y,self.width*zoom,self.heigth)
 
-       
-#    def isInside(self,x):
-#        return self.Contains(x)
         
     def getTrackNum(self):
         self.trackNum = self.Y / self.heigth - 1 
@@ -97,8 +94,7 @@ class Track(wx.Panel):
         dlg = TrackNameDlg(self, -1, self.trackNum)
 
         if dlg.ShowModal() == wx.ID_OK:
-            self.name = dlg.getText()
-            self.button.SetLabel(self.name)
+            self.button.SetLabel(dlg.getText())
 
         dlg.Destroy()
         
