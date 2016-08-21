@@ -4,10 +4,6 @@ import wx
 from constants import *
 from variables import *
 
-## Je sais que ça fait plus d'une fois qu'on en jase.... mais je ne saisi pas encore la logique....
-## Présentement mon rectangle ne donne plus du tout les bonnes valeurs de absStart stop et AbsWidth... voir les méthodes:getAbsStart,getAbsStop,getAbsWidth
-## j'avais réussit à changer les rectangles de place grace au zoom. mais il ne revenais plus à leur place quand je "dézoomais"
-## et la marge que je laisse pour les TRACKNAME me cause de beaux maux de tête. Je me demande si les NAMETRACK n'étaient pas mieux à l"extérieur de ma grid
 
 class Rectangle(wx.Rect):
     
